@@ -1,52 +1,264 @@
-# -*- coding: utf-8 -*-
+"""
+    Python链表数据结构
+    作者：Jake Huang
+    邮箱：jarork@qq.com
+    博客：Jakehuang.com
+
+    链表数据结构支持的方法有：
+    1. 实例化LinkedList时，可使用列表或元组进行链表的赋值，并可限制链表最大长度 O(n)
+    2. 支持使用len可返回链表长度 O(1)
+    3. 支持使用append可在链表末尾添加新的结点 O(1)
+    4. 支持使用索引获取或修改第i个结点的值 O(n)
+    5. 支持使用切片获取一个子链表
+    6. 支持使用pop，remove和del删除链表中的结点 定位O(n) 删除O(1)
+    7. 支持链表对象的迭代   O(n)
+    8. 支持print打印    O(n)
+    9. 支持in语句，判断链表中是否包含某一元素   O(n)
+    10. 支持使用insert，在链表某一位置插入结点   定位O(n) 插入O(1)
+    11. 支持使用clear语句，清空链表中全部结点   O(n)
+    12. 支持使用 + 运算符拼接链表和链表     O(1)
+    13. 支持使用reverse反转链表中的所有结点 O(n)
+"""
+
+import copy
 
 
-class Node(object):
-    def __init__(self, value=None, next=None):   # 这里我们 root 节点默认都是 None，所以都给了默认值
+class Node():
+    def __init__(self, value=None, next=None):
         self.value = value
         self.next = next
 
-    def __str__(self):
-        """方便你打出来调试，复杂的代码可能需要断点调试"""
-        return '<Node: value: {}, next={}>'.format(self.value, self.next)
-
-    __repr__ = __str__
+    def __repr__(self):
+        return "<Node: value = {}, next = {}>".format(self.value, self.next)
 
 
-class LinkedList(object):
-    """ 
-        链接表 ADT
-        [root] -> [node0] -> [node1] -> [node2]
-        方法介绍：
-        1. 实例化返回只含头结点的空链表
-        2. __len__(self)：返回链表长度
-        3. append(self, value)：在链表最右插入一个元素
-        4. appendleft(self, value)：在链表头结点后插入一个元素
-        5. __iter__(self)：遍历所有元素的生成器
-        6. iter_node(self)：遍历包括头尾结点的所有元素的生成器
-        7. remove(self, value)：删除包含值的一个结点
-        8. find(self, value)：查找一个结点，返回序号，从 0 开始
-        9. popleft(self)：删除第一个链表结点
-        10. clear(self)：删除所有结点
-        11. reverse(self)：反转链表
-
-    """
-
-    def __init__(self, maxsize=None):
+class LinkedList():
+    def __init__(self, arr=None, maxsize=None):
         """
-        :param maxsize: int or None, 如果是 None，无限扩充
+            链表初始化
+            可以限制链表的长度，也可以用元组或列表给链表初始化
+        : param maxsize : 链表的最大长度
+        : param arr : 用以创建链表的数据，可以使列表或者元组
         """
+
         self.maxsize = maxsize
-        self.root = Node()     # 默认 root 节点指向 None
         self.tailnode = None
+
+        # 创建空链表
+        self.root = Node()
         self.length = 0
 
-    def __len__(self):
+        # 依据现有列表和元组建立链表
+        if arr:
+            if isinstance(arr, list) or isinstance(arr, tuple):
+                if self.maxsize == None or len(arr) < self.maxsize:
+                    # 把列表或元组中的数据全部复制到新链表中
+                    prev_node = self.root
+
+                    for i in arr:
+                        current_node = Node(value=i)
+                        prev_node.next = current_node
+                        prev_node = current_node
+                    self.length += len(arr)
+                    self.tailnode = current_node
+
+                else:
+                    raise Exception(
+                        "The capacity of the new Linked List is not big enough to hold the input elements.")
+
+            else:
+                raise TypeError(
+                    "The Linked List Type can only be initialized with a list or tuple, not %s" % str(type(arr)))
+
+    def __len__(self) -> int:
+        """
+            支持使用 len 方法取得链表的长度
+        """
         return self.length
 
-    def append(self, value):    # O(1)
+    def __getitem__(self, index):
+        """
+            获取链表中索引为index的元素的值
+        : param index : 链表的索引，可以是一个索引值，也可以是切片。不支持步长
+        """
+
+        if isinstance(index, slice):
+            start = index.start
+            stop = index.stop
+            step = index.step
+            if step != None:
+                raise Exception(
+                    "Slicing with a step is not supported for linked list.")
+
+            if start == None and stop == None:
+                raise SyntaxError("Invalid Syntax.")
+
+            if start == None:
+                start = 0
+
+            if stop == None:
+                stop = len(self)
+
+            if start > len(self) or stop > len(self):
+                raise IndexError("Linked list index out of range.")
+
+            if len(self) == 0:
+                return None
+
+            if (not isinstance(start, int)) or (not isinstance(stop, int)):
+                raise IndexError("The slicing indice should all be integers.")
+
+            if stop <= start:
+                raise IndexError(
+                    "the slice stop should always be larger than the start.")
+
+            # 创建用于存放切片的空链表
+            new_linked_list = LinkedList()
+
+            # 定位到起始索引的位置
+            current_node = self.root.next
+            for i in range(start):
+                current_node = current_node.next
+
+            # 开始往新链表中复制
+            copy_times = stop - start
+            for i in range(copy_times):
+                node = copy.deepcopy(current_node)
+                new_linked_list.append(node.value)
+                current_node = current_node.next
+            return new_linked_list
+
+        elif isinstance(index, int):
+            if index < self.length:
+                current_node = self.root.next
+                for i in range(index):
+                    current_node = current_node.next
+                return current_node.value
+
+            else:
+                raise IndexError("Linked list index out of range.")
+
+        else:
+            raise IndexError("Linked list index should be int.")
+
+    def __setitem__(self, index: int, value):
+        """
+            改变链表中索引为index的元素的值为value
+        : param index : 链表的索引
+        : param value : 修改后元素的值
+        """
+        if index < self.length:
+            # 定位到目标元素
+            current_node = self.root.next
+            for i in range(index):
+                current_node = current_node.next
+            current_node.value = value
+        else:
+            raise IndexError("Linked list index out of range.")
+
+    def __delitem__(self, index: int) -> None:
+        """
+            使用 del 语句删除链表中的元素
+        : param index : 删除结点的索引值
+        """
+        self.pop(index)
+
+    def __iter__(self):
+        current_node = self.root.next
+        for i in range(len(self)):
+            yield current_node.value
+            current_node = current_node.next
+
+    def __repr__(self):
+        """
+            提供打印链表中的全部元素的方法
+        """
+        linked_list_print = "LinkedList("
+        # 如果是空链表
+        if len(self) == 0:
+            return linked_list_print + ")"
+
+        current_node = self.root.next
+        # 如果链表只有一个结点
+        if len(self) == 1:
+            return linked_list_print + str(current_node.value) + ")"
+        linked_list_print += str(current_node.value) + ", "
+
+        for i in range(len(self)-1):
+            current_node = current_node.next
+            if isinstance(current_node.value, int) or isinstance(current_node.value, float):
+                linked_list_print += str(current_node.value)
+            else:
+                linked_list_print += '"%s"' % str(current_node.value)
+
+            if i < len(self) - 2:
+                linked_list_print += ", "
+            else:
+                linked_list_print += ")"
+
+        return linked_list_print
+
+    def __contains__(self, value) -> bool:
+        """
+            支持 in 语句，判断元素是否存在于链表中
+        : param value : 要查找的元素
+        """
+        # 遍历链表，查找value
+        current_node = self.root.next
+
+        if current_node.value == value:
+            self.root.next = current_node.next
+            return True
+
+        for i in range(len(self)-1):
+            current_node = current_node.next
+
+            # 如果定位到该元素，删除，跳出
+            if current_node.value == value:
+                return True
+
+        # 没有找到该元素
+        return False
+
+    def __add__(self, linked_list):
+        """
+            链表拼接，原链表 + 新链表
+        : param linked_list : 新链表(在+右侧)
+        : return concat_linked_list : 合成之后的链表
+        """
+        # 深拷贝链表A和链表B
+        linked_list_a = copy.deepcopy(self)
+        linked_list_b = copy.deepcopy(linked_list)
+
+        # 创建一个新链表存储连接之后的链表
+        linked_list_a.tailnode.next = linked_list_b.root.next
+        linked_list_a.tailnode = linked_list_b.tailnode
+        linked_list_a.length += linked_list_b.length
+        return linked_list_a
+
+    def __radd__(self, linked_list):
+        """
+            链表拼接，新链表 + 原链表
+        : param linked_list : 新链表(在+左侧)
+        : return concat_linked_list : 合成之后的链表
+        """
+        # 深拷贝链表A和链表B
+        linked_list_a = copy.deepcopy(linked_list)
+        linked_list_b = copy.deepcopy(self)
+
+        # 创建一个新链表存储连接之后的链表
+        linked_list_a.tailnode.next = linked_list_b.root.next
+        linked_list_a.tailnode = linked_list_b.tailnode
+        linked_list_a.length += linked_list_b.length
+        return linked_list_a
+
+    def append(self, value):
+        """
+            在链表结尾插入值为value的新结点
+        : param value : 链表中新结点的值
+        """
         if self.maxsize is not None and len(self) >= self.maxsize:
-            raise Exception('LinkedList is Full')
+            raise Exception('The LinkedList is Full')
         node = Node(value)    # 构造节点
         tailnode = self.tailnode
         if tailnode is None:    # 还没有 append 过，length = 0， 追加到 root 后
@@ -56,178 +268,129 @@ class LinkedList(object):
         self.tailnode = node
         self.length += 1
 
-    def appendleft(self, value):
-        if self.maxsize is not None and len(self) >= self.maxsize:
-            raise Exception('LinkedList is Full')
-        node = Node(value)
-        if self.tailnode is None:  # 如果原链表为空，插入第一个元素需要设置 tailnode
-            self.tailnode = node
-
-        headnode = self.root.next
-        self.root.next = node
-        node.next = headnode
-        self.length += 1
-
-    def __iter__(self):
-        for node in self.iter_node():
-            yield node.value
-
-    def iter_node(self):
-        """遍历 从 head 节点到 tail 节点"""
-        curnode = self.root.next
-        while curnode is not self.tailnode:    # 从第一个节点开始遍历
-            yield curnode
-            curnode = curnode.next    # 移动到下一个节点
-        if curnode is not None:
-            yield curnode
-
-    def remove(self, value):    # O(n)
-        """ 删除包含值的一个节点，将其前一个节点的 next 指向被查询节点的下一个即可
-
-        :param value:
+    def pop(self, index: int):
         """
-        prevnode = self.root    #
-        for curnode in self.iter_node():
-            if curnode.value == value:
-                prevnode.next = curnode.next
-                if curnode is self.tailnode:  # NOTE: 注意更新 tailnode
-                    if prevnode is self.root:
-                        self.tailnode = None
-                    else:
-                        self.tailnode = prevnode
-                del curnode
-                self.length -= 1
-                return 1  # 表明删除成功
+            删除并弹出链表中索引为index的结点
+        : param index : 链表的索引
+        """
+        if index < self.length:
+            # 定位到目标元素
+            current_node = self.root.next
+            for i in range(index):
+                prev_node = current_node
+                current_node = current_node.next
+
+            next_node = current_node.next
+
+            if index == 0:
+                self.root.next = next_node
             else:
-                prevnode = curnode
-        return -1  # 表明删除失败
+                # 把目标前面的结点连接到目标后面的结点
+                prev_node.next = next_node
 
-    def find(self, value):    # O(n)
-        """ 查找一个节点，返回序号，从 0 开始
+            # 删除当前结点
+            value = current_node.value
+            del current_node
+            self.length -= 1
 
-        :param value:
+            # 弹出删除元素的值
+            return value
+
+        else:
+            raise IndexError("Linked list index out of range.")
+
+    def remove(self, value):
         """
-        index = 0
-        for node in self.iter_node():   # 我们定义了 __iter__，这里就可以用 for 遍历它了
-            if node.value == value:
-                return index
-            index += 1
-        return -1    # 没找到
-
-    def popleft(self):    # O(1)
-        """ 删除第一个链表节点
+            删除链表中值为value的第一个元素
+        : param value : 要删除的元素的值
         """
-        if self.root.next is None:
-            raise Exception('pop from empty LinkedList')
-        headnode = self.root.next
-        self.root.next = headnode.next
+        # 遍历链表，查找value
+        current_node = self.root.next
+
+        if current_node.value == value:
+            self.root.next = current_node.next
+            del current_node
+            self.length -= 1
+            return
+
+        for i in range(len(self)):
+            prev_node = current_node
+            current_node = current_node.next
+
+            # 如果定位到该元素，删除，跳出
+            if current_node.value == value:
+                break
+        next_node = current_node.next
+
+        prev_node.next = next_node
+        del current_node
         self.length -= 1
-        value = headnode.value
 
-        if self.tailnode is headnode:   # 勘误：增加单节点删除 tailnode 处理
-            self.tailnode = None
-        del headnode
-        return value
+    def insert(self, index: int, value):
+        """
+            在链表索引index位置插入值为value的结点
+        : param index : 链表的索引位置
+        : param value : 新结点的值
+        """
+        if self.maxsize is not None and len(self) >= self.maxsize:
+            raise Exception("The LinkedList is Full")
+
+        if index == 0:
+            node = Node(value=value, next=self.root.next)
+            self.root.next = node
+            self.length += 1
+            return
+
+        if index < self.length:
+            # 定位到目标元素
+            current_node = self.root.next
+            for i in range(index):
+                prev_node = current_node
+                current_node = current_node.next
+
+            # 新建结点
+            node = Node(value=value, next=current_node)
+
+            prev_node.next = node
+            self.length += 1
+
+        else:
+            raise IndexError("Linked list index out of range.")
 
     def clear(self):
-        for node in self.iter_node():
-            del node
-        self.root.next = None
+        """
+            清空链表中的所有结点
+        """
+        current_node = self.root.next
+        for i in range(len(self)):
+            prev_node = current_node
+            current_node = current_node.next
+            del prev_node
+        del current_node
+        del self.tailnode
         self.length = 0
-        self.tailnode = None
 
     def reverse(self):
-        """反转链表"""
-        curnode = self.root.next
-        self.tailnode = curnode  # 记得更新 tailnode，多了这个属性处理起来经常忘记
-        prevnode = None
+        """
+            对链表进行反转
+        """
+        current_node = self.root.next
+        self.tailnode = current_node
+        prev_node = None
 
-        while curnode:
-            nextnode = curnode.next
-            curnode.next = prevnode
+        while current_node:
+            next_node = current_node.next
+            current_node.next = prev_node
 
-            if nextnode is None:
-                self.root.next = curnode
+            if next_node is None:
+                self.root.next = current_node
 
-            prevnode = curnode
-            curnode = nextnode
-
-
-def test_linked_list():
-    ll = LinkedList()
-
-    ll.append(0)
-    ll.append(1)
-    ll.append(2)
-    ll.append(3)
-
-    assert len(ll) == 4
-    assert ll.find(2) == 2
-    assert ll.find(-1) == -1
-
-    assert ll.remove(0) == 1
-    assert ll.remove(10) == -1
-    assert ll.remove(2) == 1
-    assert len(ll) == 2
-    assert list(ll) == [1, 3]
-    assert ll.find(0) == -1
-
-    ll.appendleft(0)
-    assert list(ll) == [0, 1, 3]
-    assert len(ll) == 3
-
-    headvalue = ll.popleft()
-    assert headvalue == 0
-    assert len(ll) == 2
-    assert list(ll) == [1, 3]
-
-    assert ll.popleft() == 1
-    assert list(ll) == [3]
-    ll.popleft()
-    assert len(ll) == 0
-    assert ll.tailnode is None
-
-    ll.clear()
-    assert len(ll) == 0
-    assert list(ll) == []
+            prev_node = current_node
+            current_node = next_node
+        return self
 
 
-def test_linked_list_remove():
-    ll = LinkedList()
-    ll.append(3)
-    ll.append(4)
-    ll.append(5)
-    ll.append(6)
-    ll.append(7)
-    ll.remove(7)
-    print(list(ll))
-
-def test_single_node():
-    # https://github.com/PegasusWang/python_data_structures_and_algorithms/pull/21
-    ll = LinkedList()
-    ll.append(0)
-    ll.remove(0)
-    ll.appendleft(1)
-    assert list(ll) == [1]
-
-def test_linked_list_reverse():
-    ll = LinkedList()
-    n = 10
-    for i in range(n):
-        ll.append(i)
-    ll.reverse()
-    assert list(ll) == list(reversed(range(n)))
-
-
-def test_linked_list_append():
-    ll = LinkedList()
-    ll.appendleft(1)
-    ll.append(2)
-    assert list(ll) == [1, 2]
-
-
-if __name__ == '__main__':
-    test_single_node()
-    test_linked_list()
-    test_linked_list_append()
-    test_linked_list_reverse()
+if __name__ == "__main__":
+    a = LinkedList(list(range(10)))
+    print(a[3])
+    print(a[3:])
