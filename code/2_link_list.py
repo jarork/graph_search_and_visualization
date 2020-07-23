@@ -86,6 +86,7 @@ class LinkedList():
             start = index.start
             stop = index.stop
             step = index.step
+            
             if step != None:
                 raise Exception(
                     "Slicing with a step is not supported for linked list.")
