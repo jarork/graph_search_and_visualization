@@ -21,18 +21,29 @@
 """
 
 import copy
+from time import sleep
 
 
 class Node():
+    # 限制添加其他属性
+    __slots__ = ('_value', '_next')
+
     def __init__(self, value=None, next=None):
-        self.value = value
-        self.next = next
+        # 数据域和指针域
+        self._value, self._next = value, next
 
     def __repr__(self):
-        return "<Node: value = {}, next = {}>".format(self.value, self.next)
+        return "<Node: value={}, next={}>".format(self._value, self._next)
 
+    def next(self):
+        return self._next
 
-class LinkedList():
+    def __iter__(self):
+        while self._next:
+            yield self._next
+            self._next = self._next._next
+
+class LinkedListOneway():
     def __init__(self, arr=None, maxsize=None):
         """
             链表初始化
@@ -57,7 +68,7 @@ class LinkedList():
 
                     for i in arr:
                         current_node = Node(value=i)
-                        prev_node.next = current_node
+                        prev_node._next = current_node
                         prev_node = current_node
                     self.length += len(arr)
                     self.tailnode = current_node
@@ -86,13 +97,13 @@ class LinkedList():
             start = index.start
             stop = index.stop
             step = index.step
-            
+
             if step != None:
                 raise Exception(
                     "Slicing with a step is not supported for linked list.")
 
             if start == None and stop == None:
-                raise SyntaxError("Invalid Syntax.")
+                return self
 
             if start == None:
                 start = 0
@@ -114,27 +125,27 @@ class LinkedList():
                     "the slice stop should always be larger than the start.")
 
             # 创建用于存放切片的空链表
-            new_linked_list = LinkedList()
+            new_linked_list = LinkedListOneway()
 
             # 定位到起始索引的位置
-            current_node = self.root.next
+            current_node = self.root._next
             for i in range(start):
-                current_node = current_node.next
+                current_node = current_node._next
 
             # 开始往新链表中复制
             copy_times = stop - start
             for i in range(copy_times):
                 node = copy.deepcopy(current_node)
-                new_linked_list.append(node.value)
-                current_node = current_node.next
+                new_linked_list.append(node._value)
+                current_node = current_node._next
             return new_linked_list
 
         elif isinstance(index, int):
             if index < self.length:
-                current_node = self.root.next
+                current_node = self.root._next
                 for i in range(index):
-                    current_node = current_node.next
-                return current_node.value
+                    current_node = current_node._next
+                return current_node._value
 
             else:
                 raise IndexError("Linked list index out of range.")
@@ -150,10 +161,10 @@ class LinkedList():
         """
         if index < self.length:
             # 定位到目标元素
-            current_node = self.root.next
+            current_node = self.root._next
             for i in range(index):
-                current_node = current_node.next
-            current_node.value = value
+                current_node = current_node._next
+            current_node._value = value
         else:
             raise IndexError("Linked list index out of range.")
 
@@ -165,10 +176,10 @@ class LinkedList():
         self.pop(index)
 
     def __iter__(self):
-        current_node = self.root.next
+        current_node = self.root._next
         for i in range(len(self)):
-            yield current_node.value
-            current_node = current_node.next
+            yield current_node._value
+            current_node = current_node._next
 
     def __repr__(self):
         """
@@ -179,18 +190,18 @@ class LinkedList():
         if len(self) == 0:
             return linked_list_print + ")"
 
-        current_node = self.root.next
+        current_node = self.root._next
         # 如果链表只有一个结点
         if len(self) == 1:
-            return linked_list_print + str(current_node.value) + ")"
-        linked_list_print += str(current_node.value) + ", "
+            return linked_list_print + str(current_node._value) + ")"
+        linked_list_print += str(current_node._value) + ", "
 
         for i in range(len(self)-1):
-            current_node = current_node.next
-            if isinstance(current_node.value, int) or isinstance(current_node.value, float):
-                linked_list_print += str(current_node.value)
+            current_node = current_node._next
+            if isinstance(current_node._value, int) or isinstance(current_node._value, float):
+                linked_list_print += str(current_node._value)
             else:
-                linked_list_print += '"%s"' % str(current_node.value)
+                linked_list_print += '"%s"' % str(current_node._value)
 
             if i < len(self) - 2:
                 linked_list_print += ", "
@@ -205,17 +216,17 @@ class LinkedList():
         : param value : 要查找的元素
         """
         # 遍历链表，查找value
-        current_node = self.root.next
+        current_node = self.root._next
 
-        if current_node.value == value:
-            self.root.next = current_node.next
+        if current_node._value == value:
+            self.root._next = current_node._next
             return True
 
         for i in range(len(self)-1):
-            current_node = current_node.next
+            current_node = current_node._next
 
             # 如果定位到该元素，删除，跳出
-            if current_node.value == value:
+            if current_node._value == value:
                 return True
 
         # 没有找到该元素
@@ -232,7 +243,7 @@ class LinkedList():
         linked_list_b = copy.deepcopy(linked_list)
 
         # 创建一个新链表存储连接之后的链表
-        linked_list_a.tailnode.next = linked_list_b.root.next
+        linked_list_a.tailnode._next = linked_list_b.root._next
         linked_list_a.tailnode = linked_list_b.tailnode
         linked_list_a.length += linked_list_b.length
         return linked_list_a
@@ -248,10 +259,29 @@ class LinkedList():
         linked_list_b = copy.deepcopy(self)
 
         # 创建一个新链表存储连接之后的链表
-        linked_list_a.tailnode.next = linked_list_b.root.next
+        linked_list_a.tailnode._next = linked_list_b.root._next
         linked_list_a.tailnode = linked_list_b.tailnode
         linked_list_a.length += linked_list_b.length
         return linked_list_a
+
+    def node(self, index):
+        """
+            获取链表某索引位置的结点
+        """
+        if isinstance(index, int):
+            if index == 0:
+                return self.root._next
+
+            if index >= self.length:
+                raise IndexError("Index out of range.")
+
+            current_node = self.root._next
+            for i in range(index):
+                current_node = current_node._next
+            return current_node
+
+        else:
+            raise TypeError("The input index should be int.")
 
     def append(self, value):
         """
@@ -263,9 +293,9 @@ class LinkedList():
         node = Node(value)    # 构造节点
         tailnode = self.tailnode
         if tailnode is None:    # 还没有 append 过，length = 0， 追加到 root 后
-            self.root.next = node
+            self.root._next = node
         else:     # 否则追加到最后一个节点的后边，并更新最后一个节点是 append 的节点
-            tailnode.next = node
+            tailnode._next = node
         self.tailnode = node
         self.length += 1
 
@@ -276,21 +306,21 @@ class LinkedList():
         """
         if index < self.length:
             # 定位到目标元素
-            current_node = self.root.next
+            current_node = self.root._next
             for i in range(index):
                 prev_node = current_node
-                current_node = current_node.next
+                current_node = current_node._next
 
-            next_node = current_node.next
+            next_node = current_node._next
 
             if index == 0:
-                self.root.next = next_node
+                self.root._next = next_node
             else:
                 # 把目标前面的结点连接到目标后面的结点
-                prev_node.next = next_node
+                prev_node._next = next_node
 
             # 删除当前结点
-            value = current_node.value
+            value = current_node._value
             del current_node
             self.length -= 1
 
@@ -306,24 +336,24 @@ class LinkedList():
         : param value : 要删除的元素的值
         """
         # 遍历链表，查找value
-        current_node = self.root.next
+        current_node = self.root._next
 
-        if current_node.value == value:
-            self.root.next = current_node.next
+        if current_node._value == value:
+            self.root._next = current_node._next
             del current_node
             self.length -= 1
             return
 
         for i in range(len(self)):
             prev_node = current_node
-            current_node = current_node.next
+            current_node = current_node._next
 
             # 如果定位到该元素，删除，跳出
-            if current_node.value == value:
+            if current_node._value == value:
                 break
-        next_node = current_node.next
+        next_node = current_node._next
 
-        prev_node.next = next_node
+        prev_node._next = next_node
         del current_node
         self.length -= 1
 
@@ -337,22 +367,22 @@ class LinkedList():
             raise Exception("The LinkedList is Full")
 
         if index == 0:
-            node = Node(value=value, next=self.root.next)
-            self.root.next = node
+            node = Node(value=value, next=self.root._next)
+            self.root._next = node
             self.length += 1
             return
 
         if index < self.length:
             # 定位到目标元素
-            current_node = self.root.next
+            current_node = self.root._next
             for i in range(index):
                 prev_node = current_node
-                current_node = current_node.next
+                current_node = current_node._next
 
             # 新建结点
             node = Node(value=value, next=current_node)
 
-            prev_node.next = node
+            prev_node._next = node
             self.length += 1
 
         else:
@@ -362,10 +392,10 @@ class LinkedList():
         """
             清空链表中的所有结点
         """
-        current_node = self.root.next
+        current_node = self.root._next
         for i in range(len(self)):
             prev_node = current_node
-            current_node = current_node.next
+            current_node = current_node._next
             del prev_node
         del current_node
         del self.tailnode
@@ -375,16 +405,16 @@ class LinkedList():
         """
             对链表进行反转
         """
-        current_node = self.root.next
+        current_node = self.root._next
         self.tailnode = current_node
         prev_node = None
 
         while current_node:
-            next_node = current_node.next
-            current_node.next = prev_node
+            next_node = current_node._next
+            current_node._next = prev_node
 
             if next_node is None:
-                self.root.next = current_node
+                self.root._next = current_node
 
             prev_node = current_node
             current_node = next_node
@@ -392,6 +422,11 @@ class LinkedList():
 
 
 if __name__ == "__main__":
-    a = LinkedList(list(range(10)))
+    a = LinkedListOneway(list(range(10)))
     print(a[3])
-    print(a[3:])
+    print(a[:])
+    print(len(a))
+    b = a.node(4)
+    print(b)
+    print(b.next())
+
