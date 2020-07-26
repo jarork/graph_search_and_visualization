@@ -26,7 +26,7 @@ from time import sleep
 
 class Node():
     # 限制添加其他属性
-    # __slots__ = ('value', 'next')
+    __slots__ = ('value', 'next')
 
     def __init__(self, value=None, next=None):
         # 数据域和指针域
