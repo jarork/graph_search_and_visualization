@@ -265,6 +265,6 @@ if __name__ == "__main__":
                 graph_gravity=0.2, # 点受到的向中心的引力因子。TODO 该值越大节点越往中心点靠拢。默认为 0.2
                 graph_repulsion=1000, # 节点之间的斥力因子。默认为 50，TODO 值越大则斥力越大
                 is_label_show=True,
-                 line_curve=0) # 线的弯曲度
+                 line_curve=0.05) # 线的弯曲度
     graph.print_graph(**print_kwargs)
     pass
