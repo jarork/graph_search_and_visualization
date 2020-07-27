@@ -93,7 +93,7 @@ class Graph:
 
     def ucs(self, path = True):
         """
-            一致代价查找 (Uniform Cost Search)
+            统一成本查找 (Uniform Cost Search)
             优先展开从起点能到达的最近的点。当起点到所有未展开点的路程都一致的情况，就等价于BFS
         : param path : 是否返回目的地的整条路径
         : return node or path : 返回目的地元素或者到达目的地的整条路径
