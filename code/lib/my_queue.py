@@ -38,7 +38,7 @@ class Queue():
         return self.length
 
     # 3. 支持使用push在队列尾部压入新的元素
-    def push(self, value) -> None:
+    def enqueue(self, value) -> None:
         """
             在队尾添加新的元素
         : param value : 新元素的值
@@ -50,7 +50,7 @@ class Queue():
             raise Exception("The queue is full.")
 
     # 4. 支持使用poll在队列头部取出元素
-    def poll(self):
+    def dequeue(self):
         """
             在队列头部取出元素
         : return value : 在队列头部取出的元素
@@ -77,7 +77,7 @@ class Queue():
             使队列数据结构支持打印查询
         : return str : 打印出来的内容
         """
-        queue_print = "queue("
+        queue_print = "Queue("
         if not len(self):
             queue_print += ")"
 

@@ -1,10 +1,10 @@
 """
     树和图结构的Python实现
-    作者：Jake Huang
-    邮箱：jarork@qq.com
-    博客：Jakehuang.com
+    作者:Jake Huang
+    邮箱:jarork@qq.com
+    博客:Jakehuang.com
 
-    功能：
+    功能:
     1. 支持A星，贪婪，BFS查找
     2. 支持DFS，DLS，IDS查找
     3. 使用查找节点的方法时，可设置path的bool值，是否返回整条路径
@@ -22,48 +22,91 @@
         当g(n) = 层数(n)时，UCS等价于BFS。
 """
 
+import pyecharts
+
 class Node:
     """
         节点模型 -> 用于存储每个节点的数据
-        数据包括节点名，父节点，子节点列表，以及其他kwargs参数
+        数据包括节点名，以及其他kwargs参数
     """
-    def __init__(
-                self,
-                name : str,                         # 节点名
-                neighbors : dict{name: {cost:}} or None,           # 相邻节点名
-                cost : int or float = None,         # 从各个父节点到本节点的路径长度
-                g_cost : int or float = None,       # 从起点到本节点的最近路径长度
-                h_cost : int or float = None,       # 从本节点到终点的估算长度
-                **kwargs
-                ):
+    def __init__(self, name : str, **kwargs):
         """
             节点初始化
         : param name : 节点名
-        : param parent : 父节点名，根节点请传None
-        : param children : 所有子节点名，末节点传None
-        : param cost : 从父节点到本节点的路径长度
-        : param g_cost : 从起点到本节点的路径长度
-        : param h_cost : 从本节点到终点的估算长度
         : param kwargs->self.properties : 额外添加的节点属性，如x，y等。用于heuristic函数
         """
         self.name = name
-        self.parent = parent
-        self.children = children
-        self.cost = cost
-        self.g_cost = g_cost
-        self.h_cost = h_cost
+        self.attr = kwargs
 
-        self.properties = kwargs
+    def dict(self):
+        nodes_data = {"name" : self.name}
+        nodes_data.update(self.attr)
+        return nodes_data
+
+    def __repr__(self):
+        return self.name
+
+class Edge:
+    """
+        边模型 -> 用于存储节点之间的连接关系
+        分为起点和终点
+    """
+    def __init__(self, source:str, target:str, value=None, **kwargs):
+        """
+            边的初始化
+        : param source : 起点的节点名
+        : param target : 终点的节点名
+        """
+        self.source = source
+        self.target = target
+        self.value = value
+        self.attr = kwargs
+
+    def __repr__(self):
+        string = "{} -> {}".format(self.source, self.target)
+
+        if self.value:
+            string += " : {}".format(self.value)
+        else:
+            string += " : None"
+
+        if self.attr:
+            string += "  "
+            string += str(self.attr)
+
+        return string
+
+    def dict(self):
+        edges_data = {
+                    "source":self.source,
+                    "target":self.target,
+                    "value":self.value,
+                    }
+        edges_data.update(self.attr)
+        return edges_data
 
 class Graph:
-    def __init__(self, nodes:list):
+    def __init__(self, nodes:list, edges:list):
         """
-            创建树结构
-            {节点名：{}}
+            创建双向图结构
         : param nodes : 图的所有结点（列表）
+        : param edges : 图的所有边（列表）
         """
+
+        self.nodes = nodes
+        self.edges = edges
+
+    def get_json():
         pass
-        # 判断tree_dict是否是一个树，还是图表
+
+    def print_graph(self, **kwargs):
+        nodes_printable = [n.dict() for n in self.nodes]
+        edges_printable = [e.dict() for e in self.edges]
+
+        graph = pyecharts.Graph("Romania")
+
+        graph.add("",nodes_printable, edges_printable, **kwargs)
+        graph.render("./Romania.html")
 
     def __iter__(self, path = True, method = "bfs"):
         """
@@ -135,5 +178,93 @@ class Graph:
         pass
 
 if __name__ == "__main__":
-    nodes = []
-    nodes.append(Node())
+    
+    def get_data_romania():
+        nodes_book = {
+            "Oradea" : {"value":30, "symbolSize":5, "population":450000},
+            "Zerind" : {"value":30, "symbolSize":5, "population":450000},
+            "Arad" : {"value":30, "symbolSize":5, "population":450000},
+            "Timisoara" : {"value":30, "symbolSize":5, "population":450000},
+            "Lugoj" : {"value":30, "symbolSize":5, "population":450000},
+            "Mehadia" : {"value":30, "symbolSize":5, "population":450000},
+            "Dobreta" : {"value":30, "symbolSize":5, "population":450000},
+            "Craiova" : {"value":30, "symbolSize":5, "population":450000},
+            "Pitesti" : {"value":30, "symbolSize":5, "population":450000},
+            "Rimnicu Vilcea" : {"value":30, "symbolSize":5, "population":450000},
+            "Sibiu" : {"value":30, "symbolSize":5, "population":450000},
+            "Fagaras" : {"value":30, "symbolSize":5, "population":450000},
+            "Bucharest" : {"value":30, "symbolSize":5, "population":450000},
+            "Giurgiu" : {"value":30, "symbolSize":5, "population":450000},
+            "Urziceni" : {"value":30, "symbolSize":5, "population":450000},
+            "Vaslui" : {"value":30, "symbolSize":5, "population":450000},
+            "Iasi" : {"value":30, "symbolSize":5, "population":450000},
+            "Neamt" : {"value":30, "symbolSize":5, "population":450000},
+            "Hirsova" : {"value":30, "symbolSize":5, "population":450000},
+            "Eforie" : {"value":30, "symbolSize":5, "population":450000},
+        }
+
+        edges_book = [
+            ("Oradea", "Zerind", 71),
+            ("Oradea", "Sibiu", 151),
+            ("Zerind", "Arad", 75),
+            ("Arad", "Sibiu", 140),
+            ("Arad", "Timisoara", 118),
+            ("Timisoara", "Lugoj", 111),
+            ("Lugoj", "Mehadia", 70),
+            ("Mehadia", "Dobreta", 75),
+            ("Dobreta", "Craiova", 120),
+            ("Craiova", "Rimnicu Vilcea", 146),
+            ("Craiova", "Pitesti", 138),
+            ("Rimnicu Vilcea", "Sibiu", 80),
+            ("Rimnicu Vilcea", "Pitesti", 97),
+            ("Pitesti", "Bucharest", 101),
+            ("Sibiu", "Fagaras", 99),
+            ("Fagaras", "Bucharest", 211),
+            ("Bucharest", "Giurgiu", 90),
+            ("Bucharest", "Urziceni", 85),
+            ("Urziceni", "Vaslui", 142),
+            ("Urziceni", "Hirsova", 98),
+            ("Hirsova", "Eforie", 86),
+            ("Vaslui", "Iasi", 92),
+            ("Iasi", "Neamt", 87)
+        ]
+
+        nodes = []
+        edges = []
+        for name, attr in nodes_book.items():
+            nodes.append(Node(name, **attr))
+        
+        for edge in edges_book:
+            source, target = edge[:2]
+            if len(edge) > 2 and isinstance(edge[2], int):
+                value = edge[2]
+                edges.append(Edge(source, target, value))
+                edges.append(Edge(target, source, value))
+
+                if len(edge) > 3 and isinstance(edge[3], dict):
+                    attr = edge[3]
+                    edges.append(Edge(source, target, value, **attr))
+                    edges.append(Edge(target, source, value, **attr))
+
+            if len(edge) > 2 and isinstance(edge[2], dict):
+                attr = edge[2]
+                edges.append(Edge(source, target, **attr))
+                edges.append(Edge(target, source, **attr))
+        
+        return nodes, edges
+    
+    nodes, edges = get_data_romania()
+    graph = Graph(nodes, edges)
+
+    print_kwargs = dict(categories=None, # 结点分类的类目，结点可以指定分类，也可以不指定。
+                is_focusnode=True, # 是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。默认为 True
+                is_roam=True,
+                # is_rotatelabel=True, # 是否旋转标签，默认为 False
+                # graph_layout="circular", # 布局类型，默认force=力引导图，circular=环形布局
+                # graph_edge_length=100, # 力布局下边的两个节点之间的距离，这个距离也会受 repulsion 影响。默认为 50，TODO 值越大则长度越长
+                graph_gravity=0.2, # 点受到的向中心的引力因子。TODO 该值越大节点越往中心点靠拢。默认为 0.2
+                graph_repulsion=1000, # 节点之间的斥力因子。默认为 50，TODO 值越大则斥力越大
+                is_label_show=True,
+                 line_curve=0) # 线的弯曲度
+    graph.print_graph(**print_kwargs)
+    pass
