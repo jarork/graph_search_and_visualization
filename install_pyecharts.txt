@@ -1,0 +1,6 @@
+// 安装pyecharts v0.5版本
+pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pyecharts
+pip3 install *.whl
+
+// 安装pyecharts v1.7.1版本
+pip3 install pyecharts==1.7.1

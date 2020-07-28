@@ -22,7 +22,8 @@
         当g(n) = 层数(n)时，UCS等价于BFS。
 """
 
-import pyecharts
+from pyecharts.charts import Graph
+from pyecharts import options as opts
 
 class Node:
     """
@@ -37,6 +38,7 @@ class Node:
         """
         self.name = name
         self.attr = kwargs
+        self.__dict__.update(**kwargs)
 
     def dict(self):
         nodes_data = {"name" : self.name}
@@ -61,6 +63,7 @@ class Edge:
         self.target = target
         self.value = value
         self.attr = kwargs
+        # self.__dict__.update(**kwargs)
 
     def __repr__(self):
         string = "{} -> {}".format(self.source, self.target)
@@ -70,10 +73,6 @@ class Edge:
         else:
             string += " : None"
 
-        if self.attr:
-            string += "  "
-            string += str(self.attr)
-
         return string
 
     def dict(self):
@@ -81,11 +80,15 @@ class Edge:
                     "source":self.source,
                     "target":self.target,
                     "value":self.value,
+                    "symbol":['none', 'arrow'],
+                    "linestyle_opts": {"width":1,"color":"#fff","curveness":0.2}
+                    # "label_opts":opts.LabelOpts(is_show=True, color="#fff", position="middle", formatter="{c}")
                     }
         edges_data.update(self.attr)
+        print(self, edges_data["linestyle_opts"])
         return edges_data
 
-class Graph:
+class GraphManager:
     def __init__(self, nodes:list, edges:list):
         """
             创建双向图结构
@@ -96,14 +99,11 @@ class Graph:
         self.nodes = nodes
         self.edges = edges
 
-    def get_json():
-        pass
+    def print_graph(self, init_options, **kwargs):
+        nodes_printable = [opts.GraphNode(**n.dict()) for n in self.nodes]
+        edges_printable = [opts.GraphLink(**e.dict()) for e in self.edges]
 
-    def print_graph(self, **kwargs):
-        nodes_printable = [n.dict() for n in self.nodes]
-        edges_printable = [e.dict() for e in self.edges]
-
-        graph = pyecharts.Graph("Romania")
+        graph = Graph(init_options)
 
         graph.add("",nodes_printable, edges_printable, **kwargs)
         graph.render("./Romania.html")
@@ -178,56 +178,57 @@ class Graph:
         pass
 
 if __name__ == "__main__":
-    
+    forward_line_style = opts.LineStyleOpts(width=2,color="#faa",curve=0,opacity=0.5)
+    backward_line_style = opts.LineStyleOpts(width=2,color="#aaf",curve=0,opacity=0.5)
+
     def get_data_romania():
         nodes_book = {
-            "Oradea" : {"value":30, "symbolSize":5, "population":450000},
-            "Zerind" : {"value":30, "symbolSize":5, "population":450000},
-            "Arad" : {"value":30, "symbolSize":5, "population":450000},
-            "Timisoara" : {"value":30, "symbolSize":5, "population":450000},
-            "Lugoj" : {"value":30, "symbolSize":5, "population":450000},
-            "Mehadia" : {"value":30, "symbolSize":5, "population":450000},
-            "Dobreta" : {"value":30, "symbolSize":5, "population":450000},
-            "Craiova" : {"value":30, "symbolSize":5, "population":450000},
-            "Pitesti" : {"value":30, "symbolSize":5, "population":450000},
-            "Rimnicu Vilcea" : {"value":30, "symbolSize":5, "population":450000},
-            "Sibiu" : {"value":30, "symbolSize":5, "population":450000},
-            "Fagaras" : {"value":30, "symbolSize":5, "population":450000},
-            "Bucharest" : {"value":30, "symbolSize":5, "population":450000},
-            "Giurgiu" : {"value":30, "symbolSize":5, "population":450000},
-            "Urziceni" : {"value":30, "symbolSize":5, "population":450000},
-            "Vaslui" : {"value":30, "symbolSize":5, "population":450000},
-            "Iasi" : {"value":30, "symbolSize":5, "population":450000},
-            "Neamt" : {"value":30, "symbolSize":5, "population":450000},
-            "Hirsova" : {"value":30, "symbolSize":5, "population":450000},
-            "Eforie" : {"value":30, "symbolSize":5, "population":450000},
+            "Oradea"            : {"value":30, "x":10, "y":10, "is_fixed":True},
+            "Zerind"            : {"value":30},
+            "Arad"              : {"value":30},
+            "Timisoara"         : {"value":30},
+            "Lugoj"             : {"value":30},
+            "Mehadia"           : {"value":30},
+            "Dobreta"           : {"value":30},
+            "Craiova"           : {"value":30},
+            "Pitesti"           : {"value":30},
+            "Rimnicu Vilcea"    : {"value":30},
+            "Sibiu"             : {"value":30},
+            "Fagaras"           : {"value":30},
+            "Bucharest"         : {"value":30},
+            "Giurgiu"           : {"value":30},
+            "Urziceni"          : {"value":30},
+            "Vaslui"            : {"value":30},
+            "Iasi"              : {"value":30},
+            "Neamt"             : {"value":30},
+            "Hirsova"           : {"value":30},
+            "Eforie"            : {"value":30},
         }
-
         edges_book = [
-            ("Oradea", "Zerind", 71),
-            ("Oradea", "Sibiu", 151),
-            ("Zerind", "Arad", 75),
-            ("Arad", "Sibiu", 140),
-            ("Arad", "Timisoara", 118),
-            ("Timisoara", "Lugoj", 111),
-            ("Lugoj", "Mehadia", 70),
-            ("Mehadia", "Dobreta", 75),
-            ("Dobreta", "Craiova", 120),
-            ("Craiova", "Rimnicu Vilcea", 146),
-            ("Craiova", "Pitesti", 138),
-            ("Rimnicu Vilcea", "Sibiu", 80),
-            ("Rimnicu Vilcea", "Pitesti", 97),
-            ("Pitesti", "Bucharest", 101),
-            ("Sibiu", "Fagaras", 99),
-            ("Fagaras", "Bucharest", 211),
-            ("Bucharest", "Giurgiu", 90),
-            ("Bucharest", "Urziceni", 85),
-            ("Urziceni", "Vaslui", 142),
-            ("Urziceni", "Hirsova", 98),
-            ("Hirsova", "Eforie", 86),
-            ("Vaslui", "Iasi", 92),
-            ("Iasi", "Neamt", 87)
-        ]
+                ("Oradea", "Zerind", 71),
+                ("Oradea", "Sibiu", 151),
+                ("Zerind", "Arad", 75),
+                ("Arad", "Sibiu", 140),
+                ("Arad", "Timisoara", 118),
+                ("Timisoara", "Lugoj", 111),
+                ("Lugoj", "Mehadia", 70),
+                ("Mehadia", "Dobreta", 75),
+                ("Dobreta", "Craiova", 120),
+                ("Craiova", "Rimnicu Vilcea", 146),
+                ("Craiova", "Pitesti", 138),
+                ("Rimnicu Vilcea", "Sibiu", 80),
+                ("Rimnicu Vilcea", "Pitesti", 97),
+                ("Pitesti", "Bucharest", 101),
+                ("Sibiu", "Fagaras", 99),
+                ("Fagaras", "Bucharest", 211),
+                ("Bucharest", "Giurgiu", 90),
+                ("Bucharest", "Urziceni", 85),
+                ("Urziceni", "Vaslui", 142),
+                ("Urziceni", "Hirsova", 98),
+                ("Hirsova", "Eforie", 86),
+                ("Vaslui", "Iasi", 92),
+                ("Iasi", "Neamt", 87)
+            ]
 
         nodes = []
         edges = []
@@ -236,35 +237,74 @@ if __name__ == "__main__":
         
         for edge in edges_book:
             source, target = edge[:2]
-            if len(edge) > 2 and isinstance(edge[2], int):
+
+            # 如果有边长
+            if len(edge) == 2:
+                value = None
+                attr = None
+
+            if len(edge) == 3:
+                if isinstance(edge[2], int):
+                    value = edge[2]
+                    attr = None
+                elif isinstance(edge[2], dict):
+                    value = None
+                    attr = edge[2]
+
+            if len(edge) == 4:
                 value = edge[2]
-                edges.append(Edge(source, target, value))
-                edges.append(Edge(target, source, value))
+                attr = edge[3]
 
-                if len(edge) > 3 and isinstance(edge[3], dict):
-                    attr = edge[3]
-                    edges.append(Edge(source, target, value, **attr))
-                    edges.append(Edge(target, source, value, **attr))
-
-            if len(edge) > 2 and isinstance(edge[2], dict):
-                attr = edge[2]
-                edges.append(Edge(source, target, **attr))
-                edges.append(Edge(target, source, **attr))
+            if attr:
+                edges.append(Edge(source, target, value, **{"linestyle_opts":forward_line_style}.update(attr)))
+                edges.append(Edge(target, source, value, **{"linestyle_opts":backward_line_style}.update(attr)))
+            else:
+                edges.append(Edge(source, target, value, **{"linestyle_opts":forward_line_style}))
+                edges.append(Edge(target, source, value, **{"linestyle_opts":backward_line_style}))
         
         return nodes, edges
     
+    # 得到所有节点和边
     nodes, edges = get_data_romania()
-    graph = Graph(nodes, edges)
 
+    # 使用数据，创建图表
+    graph_manager = GraphManager(nodes, edges)
+
+    # 渲染选项
     print_kwargs = dict(categories=None, # 结点分类的类目，结点可以指定分类，也可以不指定。
                 is_focusnode=True, # 是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。默认为 True
+                # 是否开启鼠标缩放和平移漫游。
                 is_roam=True,
-                # is_rotatelabel=True, # 是否旋转标签，默认为 False
-                # graph_layout="circular", # 布局类型，默认force=力引导图，circular=环形布局
+                # 是否旋转标签，默认为 False
+                is_rotate_label=True, 
+                # 布局类型，默认force=力引导图，circular=环形布局
+                layout="force", 
                 # graph_edge_length=100, # 力布局下边的两个节点之间的距离，这个距离也会受 repulsion 影响。默认为 50，TODO 值越大则长度越长
-                graph_gravity=0.2, # 点受到的向中心的引力因子。TODO 该值越大节点越往中心点靠拢。默认为 0.2
-                graph_repulsion=1000, # 节点之间的斥力因子。默认为 50，TODO 值越大则斥力越大
-                is_label_show=True,
-                 line_curve=0.05) # 线的弯曲度
-    graph.print_graph(**print_kwargs)
+                gravity=0.8, # 点受到的向中心的引力因子。TODO 该值越大节点越往中心点靠拢。默认为 0.2
+                repulsion=2000, # 节点之间的斥力因子。默认为 50，TODO 值越大则斥力越大
+                # edge_label=opts.LabelOpts(
+                #     is_show=True, color="#fff", position="middle", formatter="{c}"
+                # ),
+                symbol="circle",
+                symbol_size = 15,
+                # edge_symbol=['none', 'arrow'],
+                edge_symbol_size=10,
+
+                # linestyle_opts={"color":"#f00", "curveness":0.2}
+                
+                )
+
+    # Pyecharm全局选项
+    init_opts = opts.InitOpts(
+            #设置动画
+            animation_opts=opts.AnimationOpts(animation_delay=1000, animation_easing="elasticOut"),
+            #设置宽度、高度
+            width='600px',
+            height='600px', 
+            page_title="Romania",
+            theme="dark",
+            js_host="./assets/"
+        )
+
+    graph_manager.print_graph(init_opts, **print_kwargs)
     pass

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Romania</title>
+            <script type="text/javascript" src="./assets/echarts.min.js"></script>
+
+</head>
+<body>
+    <div id="74ed1fdd2bb54055a2f67ad9c88e1238" class="chart-container" style="width:600px; height:600px;"></div>
+    <script>
+        var chart_74ed1fdd2bb54055a2f67ad9c88e1238 = echarts.init(
+            document.getElementById('74ed1fdd2bb54055a2f67ad9c88e1238'), 'dark', {renderer: 'canvas'});
+        var option_74ed1fdd2bb54055a2f67ad9c88e1238 = {
+    "animation": true,
+    "animationThreshold": 2000,
+    "animationDuration": 1000,
+    "animationEasing": "elasticOut",
+    "animationDelay": 1000,
+    "animationDurationUpdate": 300,
+    "animationEasingUpdate": "cubicOut",
+    "animationDelayUpdate": 0,
+    "series": [
+        {
+            "type": "graph",
+            "layout": "force",
+            "symbolSize": 10,
+            "circular": {
+                "rotateLabel": false
+            },
+            "force": {
+                "repulsion": 4000,
+                "edgeLength": 50,
+                "gravity": 0.2
+            },
+            "label": {
+                "show": true,
+                "position": "top",
+                "margin": 8
+            },
+            "lineStyle": {
+                "show": true,
+                "width": 1,
+                "opacity": 1,
+                "curveness": 0,
+                "type": "solid"
+            },
+            "roam": true,
+            "draggable": false,
+            "focusNodeAdjacency": true,
+            "data": [
+                {
+                    "name": "\u7ed3\u70b91",
+                    "fixed": false,
+                    "symbolSize": 10
+                },
+                {
+                    "name": "\u7ed3\u70b92",
+                    "fixed": false,
+                    "symbolSize": 20
+                },
+                {
+                    "name": "\u7ed3\u70b93",
+                    "fixed": false,
+                    "symbolSize": 30
+                },
+                {
+                    "name": "\u7ed3\u70b94",
+                    "fixed": false,
+                    "symbolSize": 40
+                },
+                {
+                    "name": "\u7ed3\u70b95",
+                    "fixed": false,
+                    "symbolSize": 50
+                },
+                {
+                    "name": "\u7ed3\u70b96",
+                    "fixed": false,
+                    "symbolSize": 60
+                }
+            ],
+            "edgeLabel": {
+                "show": false,
+                "position": "top",
+                "margin": 8
+            },
+            "edgeSymbol": [
+                null,
+                null
+            ],
+            "edgeSymbolSize": 10,
+            "links": [
+                {
+                    "source": "\u7ed3\u70b91",
+                    "target": "\u7ed3\u70b92",
+                    "value": 2,
+                    "lineStyle": {
+                        "show": true,
+                        "color": "#f00"
+                    },
+                    "label": {
+                        "show": true,
+                        "position": "middle"
+                    }
+                },
+                {
+                    "source": "\u7ed3\u70b92",
+                    "target": "\u7ed3\u70b93",
+                    "value": 3
+                },
+                {
+                    "source": "\u7ed3\u70b93",
+                    "target": "\u7ed3\u70b94",
+                    "value": 4
+                },
+                {
+                    "source": "\u7ed3\u70b94",
+                    "target": "\u7ed3\u70b95",
+                    "value": 5,
+                    "lineStyle": {
+                        "show": true,
+                        "width": 2,
+                        "opacity": 0.8,
+                        "curveness": 0.2,
+                        "type": "solid",
+                        "color": "#fff"
+                    }
+                },
+                {
+                    "source": "\u7ed3\u70b95",
+                    "target": "\u7ed3\u70b96",
+                    "value": 6
+                },
+                {
+                    "source": "\u7ed3\u70b96",
+                    "target": "\u7ed3\u70b91",
+                    "value": 7
+                }
+            ]
+        }
+    ],
+    "legend": [
+        {
+            "data": [],
+            "selected": {},
+            "show": true,
+            "padding": 5,
+            "itemGap": 10,
+            "itemWidth": 25,
+            "itemHeight": 14
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "title": [
+        {
+            "text": "Graph-GraphNode-GraphLink-WithEdgeLabel",
+            "padding": 5,
+            "itemGap": 10
+        }
+    ]
+};
+        chart_74ed1fdd2bb54055a2f67ad9c88e1238.setOption(option_74ed1fdd2bb54055a2f67ad9c88e1238);
+    </script>
+</body>
+</html>
