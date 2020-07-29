@@ -178,8 +178,10 @@ class GraphManager:
         pass
 
 if __name__ == "__main__":
-    forward_line_style = opts.LineStyleOpts(width=2,color="#faa",curve=0,opacity=0.5)
-    backward_line_style = opts.LineStyleOpts(width=2,color="#aaf",curve=0,opacity=0.5)
+    forward_line_style = opts.LineStyleOpts(width=2,color="#faa",curve=0.2,opacity=0.5)
+    backward_line_style = opts.LineStyleOpts(width=2,color="#aaf",curve=0.2,opacity=0.5)
+    forward_lable_style = opts.LabelOpts(is_show=True, color="#fff", position="middle", formatter="{c}")
+    backward_lable_style = opts.LabelOpts(is_show=False, color="#fff", position="middle", formatter="{c}")
 
     def get_data_romania():
         nodes_book = {
@@ -256,11 +258,11 @@ if __name__ == "__main__":
                 attr = edge[3]
 
             if attr:
-                edges.append(Edge(source, target, value, **{"linestyle_opts":forward_line_style}.update(attr)))
-                edges.append(Edge(target, source, value, **{"linestyle_opts":backward_line_style}.update(attr)))
+                edges.append(Edge(source, target, value, **{"linestyle_opts":forward_line_style, "label_opts":forward_lable_style}.update(attr)))
+                edges.append(Edge(target, source, value, **{"linestyle_opts":backward_line_style, "label_opts":backward_lable_style}.update(attr)))
             else:
-                edges.append(Edge(source, target, value, **{"linestyle_opts":forward_line_style}))
-                edges.append(Edge(target, source, value, **{"linestyle_opts":backward_line_style}))
+                edges.append(Edge(source, target, value, **{"linestyle_opts":forward_line_style, "label_opts":forward_lable_style}))
+                edges.append(Edge(target, source, value, **{"linestyle_opts":backward_line_style, "label_opts":backward_lable_style}))
         
         return nodes, edges
     

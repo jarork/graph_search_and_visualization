@@ -1,0 +1,117 @@
+[
+    {
+      "source": "Oradea",
+      "target": "Zerind",
+      "value": 71
+    },
+    {
+      "source": "Oradea",
+      "target": "Sibiu",
+      "value": 151
+    },
+    {
+      "source": "Zerind",
+      "target": "Arad",
+      "value": 75
+    },
+    {
+      "source": "Arad",
+      "target": "Sibiu",
+      "value": 140
+    },
+    {
+      "source": "Arad",
+      "target": "Timisoara",
+      "value": 118
+    },
+    {
+      "source": "Timisoara",
+      "target": "Lugoj",
+      "value": 111
+    },
+    {
+      "source": "Lugoj",
+      "target": "Mehadia",
+      "value": 70
+    },
+    {
+      "source": "Mehadia",
+      "target": "Dobreta",
+      "value": 75
+    },
+    {
+      "source": "Dobreta",
+      "target": "Craiova",
+      "value": 120
+    },
+    {
+      "source": "Craiova",
+      "target": "Rimnicu Vilcea",
+      "value": 146
+    },
+    {
+      "source": "Craiova",
+      "target": "Pitesti",
+      "value": 138
+    },
+    {
+      "source": "Rimnicu Vilcea",
+      "target": "Sibiu",
+      "value": 80
+    },
+    {
+      "source": "Rimnicu Vilcea",
+      "target": "Pitesti",
+      "value": 97
+    },
+    {
+      "source": "Pitesti",
+      "target": "Bucharest",
+      "value": 101
+    },
+    {
+      "source": "Sibiu",
+      "target": "Fagaras",
+      "value": 99
+    },
+    {
+      "source": "Fagaras",
+      "target": "Bucharest",
+      "value": 211
+    },
+    {
+      "source": "Bucharest",
+      "target": "Giurgiu",
+      "value": 90
+    },
+    {
+      "source": "Bucharest",
+      "target": "Urziceni",
+      "value": 85
+    },
+    {
+      "source": "Urziceni",
+      "target": "Vaslui",
+      "value": 142
+    },
+    {
+      "source": "Urziceni",
+      "target": "Hirsova",
+      "value": 98
+    },
+    {
+      "source": "Hirsova",
+      "target": "Eforie",
+      "value": 86
+    },
+    {
+      "source": "Vaslui",
+      "target": "Iasi",
+      "value": 92
+    },
+    {
+      "source": "Iasi",
+      "target": "Neamt",
+      "value": 87
+    }
+  ]

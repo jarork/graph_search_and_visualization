@@ -1,0 +1,65 @@
+{
+    "Oradea": {
+      "value": 30,
+      "x": 10,
+      "y": 10,
+      "is_fixed": true
+    },
+    "Zerind": {
+      "value": 30
+    },
+    "Arad": {
+      "value": 30
+    },
+    "Timisoara": {
+      "value": 30
+    },
+    "Lugoj": {
+      "value": 30
+    },
+    "Mehadia": {
+      "value": 30
+    },
+    "Dobreta": {
+      "value": 30
+    },
+    "Craiova": {
+      "value": 30
+    },
+    "Pitesti": {
+      "value": 30
+    },
+    "Rimnicu Vilcea": {
+      "value": 30
+    },
+    "Sibiu": {
+      "value": 30
+    },
+    "Fagaras": {
+      "value": 30
+    },
+    "Bucharest": {
+      "value": 30
+    },
+    "Giurgiu": {
+      "value": 30
+    },
+    "Urziceni": {
+      "value": 30
+    },
+    "Vaslui": {
+      "value": 30
+    },
+    "Iasi": {
+      "value": 30
+    },
+    "Neamt": {
+      "value": 30
+    },
+    "Hirsova": {
+      "value": 30
+    },
+    "Eforie": {
+      "value": 30
+    }
+  }
