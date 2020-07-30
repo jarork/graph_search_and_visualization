@@ -19,135 +19,11 @@ class GraphManager:
         self.edges = self.import_json_edges(json_path_edges, mirror_edges)
 
         # 建立存放节点和边的哈希表，节点哈希表的索引为name，边的哈希表的索引为source和target
-        """根据节点名/ID创建节点的索引，这样就可以在众多节点中快速定位到一个节点了"""
         self.nodes_hash = self.create_nodes_hash_table(self.nodes)
-
-        """根据起始节点名/ID，以及目标节点名/ID创建索引
-        这样，就可以查找一个点的所有连接，能到达的所有节点
-        以及能到达一个节点的所有节点和临边了"""
         self.source_edges_hash, self.target_edges_hash = self.create_edges_hash_tables(
             self.edges)
 
         print(self.source_edges_hash)
-
-    def import_json_nodes(self, json_path) -> list:
-        """
-            从JSON中导入节点
-        : param json_path : JSON文件的绝对或相对路径
-        : return nodes_table : 存储所有导入节点的数据表
-        """
-
-        nodes = []
-        with open("./city_nodes.json", 'r') as f:
-            nodes_json = f.read()
-        nodes_book = json.loads(nodes_json)
-
-        for name, attr in nodes_book.items():
-            nodes.append(Node(name, **attr))
-
-        return nodes
-
-    def import_json_edges(self, json_path, mirror_edges=False):
-        """
-            从JSON中导入连接
-        : param json_path : JSON文件的绝对或相对路径
-        : param mirror_edges : 如果JSON中的边是单向的，可以把此项设为True变为双向边
-        : return edges_table : 存储所有导入边的数据表
-        """
-
-        edges_table = []
-        with open("./city_edges.json", 'r') as f:
-            edges_json = f.read()
-        edges_book = json.loads(edges_json)
-
-        for edge in edges_book:
-            # 插入所有正向的连接
-            # 为正向连接插入样式
-            edge.update(Style.forward_style)
-            edges_table.append(Edge(**edge))
-
-            if mirror_edges == True:
-                # 重新插入所有反向的连接
-                # 为反向连接添加样式
-                edge.update(Style.backward_style)
-
-                edge["source"], edge["target"] = edge["target"], edge["source"]
-                edges_table.append(Edge(**(edge)))
-
-        return edges_table
-
-    def create_nodes_hash_table(self, nodes_table) -> dict:
-        # 为nodes表建立节点名name的索引，以便使节点的查找效率为O(1)。
-        nodes_hash_table = {}
-        for node_model in nodes_table:
-            node_name = node_model.name
-
-            nodes_hash_table.update({node_name: node_model})
-        return nodes_hash_table
-
-    def create_edges_hash_tables(self, edges_table) -> tuple:
-        # 为edges表建立source和target项的索引，以便使边的查找效率为O(1)。
-        # 把所有边进行分类，每个节点可作为起点和终点，每个起点和终点分为一类。
-        source_edges_hash_table = {}
-        target_edges_hash_table = {}
-        for edge_model in edges_table:
-            source = edge_model.source
-            target = edge_model.target
-            value = edge_model.value
-            attr = edge_model.attr
-
-            if source not in source_edges_hash_table:
-                source_edges_hash_table.update({source: {}})
-
-            source_edges_hash_table[source].update(
-                {target: edge_model})
-
-            if target not in target_edges_hash_table:
-                target_edges_hash_table.update({target: {}})
-
-            target_edges_hash_table[target].update(
-                {source: edge_model})
-
-        return (source_edges_hash_table, target_edges_hash_table)
-
-    def export_json_nodes(self):
-        nodes_table = {key: node_model.dict()
-                       for key, node_model in self.nodes_hash.items()}
-        json_nodes = json.dumps(
-            nodes_table, sort_keys=True, indent=4, separators=(',', ': '))
-        with open("./output_json_nodes.json", 'w') as f:
-            f.write(json_nodes)
-
-    def export_json_edges(self):
-        source_edges = {source: {target_name: str(target_attr)
-                                 for target_name, target_attr in target.items()}
-                        for source, target in self.source_edges_hash.items()}
-        target_edges = {target: {source_name: str(source_attr)
-                                 for source_name, source_attr in source.items()}
-                        for target, source in self.target_edges_hash.items()}
-        json_source_edges = json.dumps(
-            source_edges, sort_keys=True, indent=4, separators=(',', ': '))
-        json_target_edges = json.dumps(
-            target_edges, sort_keys=True, indent=4, separators=(',', ': '))
-        with open("./output_json_source_edges.json", 'w') as f:
-            f.write(json_source_edges)
-        with open("./output_json_target_edges.json", 'w') as f:
-            f.write(json_target_edges)
-
-    def output_graph_html(self, init_options: dict, html_path: str = "./chart.html", **render_style):
-        """
-            将图导出为HTML形式
-        : param init_options : PyEcharts全局配置，请在style库中修改。
-        : param html_path : 输出的HTML地址，可使用绝对路径或者相对路径。
-        : param **render_style : PyEcharts的渲染配置，请在style库中修改
-        """
-        nodes_printable = [opts.GraphNode(**n.dict()) for n in self.nodes]
-        edges_printable = [opts.GraphLink(**e.dict()) for e in self.edges]
-
-        graph = Graph(init_options)
-
-        graph.add("", nodes_printable, edges_printable, **render_style)
-        graph.render(html_path)
 
     def __iter__(self, path=True, method="bfs"):
         """
@@ -217,3 +93,135 @@ class GraphManager:
         : return node or path : 返回目的地元素或者到达目的地的整条路径
         """
         pass
+
+
+    def import_json_nodes(self, json_path) -> list:
+        """
+            从JSON中导入节点
+        : param json_path : JSON文件的绝对或相对路径
+        : return nodes_table : 存储所有导入节点的数据表
+        """
+
+        nodes = []
+        with open("./city_nodes.json", 'r') as f:
+            nodes_json = f.read()
+        nodes_book = json.loads(nodes_json)
+
+        for name, attr in nodes_book.items():
+            nodes.append(Node(name, **attr))
+
+        return nodes
+
+    def import_json_edges(self, json_path, mirror_edges=False):
+        """
+            从JSON中导入连接
+        : param json_path : JSON文件的绝对或相对路径
+        : param mirror_edges : 如果JSON中的边是单向的，可以把此项设为True变为双向边
+        : return edges_table : 存储所有导入边的数据表
+        """
+
+        edges_table = []
+        with open("./city_edges.json", 'r') as f:
+            edges_json = f.read()
+        edges_book = json.loads(edges_json)
+
+        for edge in edges_book:
+            # 插入所有正向的连接
+            # 为正向连接插入样式
+            edge.update(Style.forward_style)
+            edges_table.append(Edge(**edge))
+
+            if mirror_edges == True:
+                # 重新插入所有反向的连接
+                # 为反向连接添加样式
+                edge.update(Style.backward_style)
+
+                edge["source"], edge["target"] = edge["target"], edge["source"]
+                edges_table.append(Edge(**(edge)))
+
+        return edges_table
+
+    def create_nodes_hash_table(self, nodes_table) -> dict:
+        """
+            根据节点名/ID创建节点的索引，这样就可以在众多节点中快速定位到一个节点了
+        : param nodes_table : 节点表
+        : return nodes_hash_table : 以节点名为索引的哈希表
+        """
+        # 为nodes表建立节点名name的索引，以便使节点的查找效率为O(1)。
+        nodes_hash_table = {}
+        for node_model in nodes_table:
+            node_name = node_model.name
+
+            nodes_hash_table.update({node_name: node_model})
+        return nodes_hash_table
+
+    def create_edges_hash_tables(self, edges_table) -> tuple:
+        """
+            根据起始节点名/ID，以及目标节点名/ID创建索引
+            这样，就可以查找一个点的所有连接，能到达的所有节点
+            以及能到达一个节点的所有节点和临边了
+        : param edges_table : 没有索引的临边列表
+        : return (source_hash_table, target_hash_table) : 以临边起终节点名为索引的2个哈希表
+        """
+        # 为edges表建立source和target项的索引，以便使边的查找效率为O(1)。
+        # 把所有边进行分类，每个节点可作为起点和终点，每个起点和终点分为一类。
+        source_edges_hash_table = {}
+        target_edges_hash_table = {}
+        for edge_model in edges_table:
+            source = edge_model.source
+            target = edge_model.target
+            value = edge_model.value
+            attr = edge_model.attr
+
+            if source not in source_edges_hash_table:
+                source_edges_hash_table.update({source: {}})
+
+            source_edges_hash_table[source].update(
+                {target: edge_model})
+
+            if target not in target_edges_hash_table:
+                target_edges_hash_table.update({target: {}})
+
+            target_edges_hash_table[target].update(
+                {source: edge_model})
+
+        return (source_edges_hash_table, target_edges_hash_table)
+
+    def export_json_nodes(self):
+        nodes_table = {key: node_model.dict()
+                       for key, node_model in self.nodes_hash.items()}
+        json_nodes = json.dumps(
+            nodes_table, sort_keys=True, indent=4, separators=(',', ': '))
+        with open("./output_json_nodes.json", 'w') as f:
+            f.write(json_nodes)
+
+    def export_json_edges(self):
+        source_edges = {source: {target_name: str(target_attr)
+                                 for target_name, target_attr in target.items()}
+                        for source, target in self.source_edges_hash.items()}
+        target_edges = {target: {source_name: str(source_attr)
+                                 for source_name, source_attr in source.items()}
+                        for target, source in self.target_edges_hash.items()}
+        json_source_edges = json.dumps(
+            source_edges, sort_keys=True, indent=4, separators=(',', ': '))
+        json_target_edges = json.dumps(
+            target_edges, sort_keys=True, indent=4, separators=(',', ': '))
+        with open("./output_json_source_edges.json", 'w') as f:
+            f.write(json_source_edges)
+        with open("./output_json_target_edges.json", 'w') as f:
+            f.write(json_target_edges)
+
+    def output_graph_html(self, init_options: dict, html_path: str = "./chart.html", **render_style):
+        """
+            将图导出为HTML形式
+        : param init_options : PyEcharts全局配置，请在style库中修改。
+        : param html_path : 输出的HTML地址，可使用绝对路径或者相对路径。
+        : param **render_style : PyEcharts的渲染配置，请在style库中修改
+        """
+        nodes_printable = [opts.GraphNode(**n.dict()) for n in self.nodes]
+        edges_printable = [opts.GraphLink(**e.dict()) for e in self.edges]
+
+        graph = Graph(init_options)
+
+        graph.add("", nodes_printable, edges_printable, **render_style)
+        graph.render(html_path)

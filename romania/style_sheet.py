@@ -1,5 +1,5 @@
 """
-    关系图的样式
+    关系图的样式表
 """
 from pyecharts import options as opts
 
@@ -7,13 +7,13 @@ class Style:
     # 双向图中正向连接的样式
     forward_line_style = opts.LineStyleOpts(
                                         width=2,
-                                        color="#faa",
+                                        color="#f55",
                                         curve=0.05,
-                                        opacity=0.3
+                                        opacity=0.4
                                         )
     forward_lable_style = opts.LabelOpts(
-                                    is_show=True, 
-                                    color="#fff", 
+                                    is_show=False, 
+                                    color="#55f", 
                                     position="middle", 
                                     formatter="{c}",
                                     font_size=10,
@@ -28,9 +28,9 @@ class Style:
     # 双向图中逆向连接的样式
     backward_line_style = opts.LineStyleOpts(
                                         width=2,
-                                        color="#aaf",
+                                        color="#55f",
                                         curve=0.05,
-                                        opacity=0.3
+                                        opacity=0.5
                                         )
     backward_lable_style = opts.LabelOpts(
                                         is_show=False, 
@@ -47,10 +47,59 @@ class Style:
                 }
     
     # 起点节点的样式
+    root_node_style = {
+        "symbol_size" : 30,
+        "symbol" : "triangle"  
+    }
 
-    # 起点连线的样式
+    # 目的地节点的样式
+    terminal_node_style = {
+        "symbol_size" : 30,
+        "symbol" : "diamond"
+    }
 
-    # 第n层
+    # 已遍历的边的样式
+    searched_line_style = opts.LineStyleOpts(
+                                        width=2,
+                                        color="#55f",
+                                        curve=0.05,
+                                        opacity=1
+                                        )
+    searched_lable_style = opts.LabelOpts(
+                                        is_show=True, 
+                                        color="#55f", 
+                                        position="middle", 
+                                        formatter="{c}",
+                                        font_size=10,
+                                        margin=4
+                                        )
+    searched_edge_style = {
+                "linestyle_opts":searched_line_style, 
+                "label_opts":searched_lable_style,
+                "symbol":['none', 'arrow']
+                }
+
+    # 正在查找的边的样式
+    current_line_style = opts.LineStyleOpts(
+                                        width=2,
+                                        color="#f55",
+                                        curve=0.05,
+                                        opacity=1
+                                        )
+    current_lable_style = opts.LabelOpts(
+                                        is_show=True, 
+                                        color="#f55", 
+                                        position="middle", 
+                                        formatter="{c}",
+                                        font_size=10,
+                                        margin=4
+                                        )
+    current_edge_style = {
+                "linestyle_opts":current_line_style, 
+                "label_opts":current_lable_style,
+                "symbol":['none', 'arrow']
+                }
+
 
     # PyEcharts渲染选项
     render_opts = dict(
@@ -86,9 +135,9 @@ class Style:
                         #设置动画
                         animation_opts=opts.AnimationOpts(animation_delay=1000, animation_easing="elasticOut"),
                         #设置宽度、高度
-                        width='400px',
-                        height='400px', 
+                        width='600px',
+                        height='500px', 
                         page_title="Romania",
-                        theme="dark",
+                        theme="light",
                         js_host="./assets/"
                         )
