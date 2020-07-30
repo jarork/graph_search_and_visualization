@@ -1,0 +1,122 @@
+{
+    "Oradea": {
+      "value": 30,
+      "x": 100,
+      "y": 20,
+      "is_fixed": true
+    },
+    "Zerind": {
+      "value": 30,
+      "x": 45,
+      "y": 45,
+      "is_fixed": true
+    },
+    "Arad": {
+      "value": 30,
+      "x": 20,
+      "y": 100,
+      "is_fixed": true
+    },
+    "Timisoara": {
+      "value": 30,
+      "x": 20,
+      "y": 175,
+      "is_fixed": true
+    },
+    "Lugoj": {
+      "value": 30,
+      "x": 70,
+      "y": 230,
+      "is_fixed": true
+    },
+    "Mehadia": {
+      "value": 30,
+      "x": 75,
+      "y": 300,
+      "is_fixed": true
+    },
+    "Dobreta": {
+      "value": 30,
+      "x": 70,
+      "y": 365,
+      "is_fixed": true
+    },
+    "Craiova": {
+      "value": 30,
+      "x": 180,
+      "y": 370,
+      "is_fixed": true
+    },
+    "Pitesti": {
+      "value": 30,
+      "x": 210,
+      "y": 270,
+      "is_fixed": true
+    },
+    "Rimnicu Vilcea": {
+      "value": 30,
+      "x": 150,
+      "y": 220,
+      "is_fixed": true
+    },
+    "Sibiu": {
+      "value": 30,
+      "x": 120,
+      "y": 130,
+      "is_fixed": true
+    },
+    "Fagaras": {
+      "value": 30,
+      "x": 200,
+      "y": 150,
+      "is_fixed": true
+    },
+    "Bucharest": {
+      "value": 30,
+      "x": 280,
+      "y": 300,
+      "is_fixed": true
+    },
+    "Giurgiu": {
+      "value": 30,
+      "x": 260,
+      "y": 380,
+      "is_fixed": true
+    },
+    "Urziceni": {
+      "value": 30,
+      "x": 310,
+      "y": 240,
+      "is_fixed": true
+    },
+    "Vaslui": {
+      "value": 30,
+      "x": 350,
+      "y": 150,
+      "is_fixed": true
+    },
+    "Iasi": {
+      "value": 30,
+      "x": 320,
+      "y": 65,
+      "is_fixed": true
+    },
+    "Neamt": {
+      "value": 30,
+      "x": 250,
+      "y": 30,
+      "is_fixed": true
+    },
+    "Hirsova": {
+      "value": 30,
+      "x": 375,
+      "y": 280,
+      "is_fixed": true
+    },
+    "Eforie": {
+      "value": 30,
+      "x": 390,
+      "y": 370,
+      "is_fixed": true
+    }
+  }

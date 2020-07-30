@@ -1,0 +1,88 @@
+{
+    "Arad": {
+        "Sibiu": "<EdgeModel Sibiu > Arad : 140>",
+        "Timisoara": "<EdgeModel Timisoara > Arad : 118>",
+        "Zerind": "<EdgeModel Zerind > Arad : 75>"
+    },
+    "Bucharest": {
+        "Fagaras": "<EdgeModel Fagaras > Bucharest : 211>",
+        "Giurgiu": "<EdgeModel Giurgiu > Bucharest : 90>",
+        "Pitesti": "<EdgeModel Pitesti > Bucharest : 101>",
+        "Urziceni": "<EdgeModel Urziceni > Bucharest : 85>"
+    },
+    "Craiova": {
+        "Dobreta": "<EdgeModel Dobreta > Craiova : 120>",
+        "Pitesti": "<EdgeModel Pitesti > Craiova : 138>",
+        "Rimnicu Vilcea": "<EdgeModel Rimnicu Vilcea > Craiova : 146>"
+    },
+    "Dobreta": {
+        "Craiova": "<EdgeModel Craiova > Dobreta : 120>",
+        "Mehadia": "<EdgeModel Mehadia > Dobreta : 75>"
+    },
+    "Eforie": {
+        "Hirsova": "<EdgeModel Hirsova > Eforie : 86>"
+    },
+    "Fagaras": {
+        "Bucharest": "<EdgeModel Bucharest > Fagaras : 211>",
+        "Sibiu": "<EdgeModel Sibiu > Fagaras : 99>"
+    },
+    "Giurgiu": {
+        "Bucharest": "<EdgeModel Bucharest > Giurgiu : 90>"
+    },
+    "Hirsova": {
+        "Eforie": "<EdgeModel Eforie > Hirsova : 86>",
+        "Urziceni": "<EdgeModel Urziceni > Hirsova : 98>"
+    },
+    "Iasi": {
+        "Neamt": "<EdgeModel Neamt > Iasi : 87>",
+        "Vaslui": "<EdgeModel Vaslui > Iasi : 92>"
+    },
+    "Lugoj": {
+        "Mehadia": "<EdgeModel Mehadia > Lugoj : 70>",
+        "Timisoara": "<EdgeModel Timisoara > Lugoj : 111>"
+    },
+    "Mehadia": {
+        "Dobreta": "<EdgeModel Dobreta > Mehadia : 75>",
+        "Lugoj": "<EdgeModel Lugoj > Mehadia : 70>"
+    },
+    "Neamt": {
+        "Iasi": "<EdgeModel Iasi > Neamt : 87>"
+    },
+    "Oradea": {
+        "Sibiu": "<EdgeModel Sibiu > Oradea : 151>",
+        "Zerind": "<EdgeModel Zerind > Oradea : 71>"
+    },
+    "Pitesti": {
+        "Bucharest": "<EdgeModel Bucharest > Pitesti : 101>",
+        "Craiova": "<EdgeModel Craiova > Pitesti : 138>",
+        "Rimnicu Vilcea": "<EdgeModel Rimnicu Vilcea > Pitesti : 97>"
+    },
+    "Rimnicu Vilcea": {
+        "Craiova": "<EdgeModel Craiova > Rimnicu Vilcea : 146>",
+        "Pitesti": "<EdgeModel Pitesti > Rimnicu Vilcea : 97>",
+        "Sibiu": "<EdgeModel Sibiu > Rimnicu Vilcea : 80>"
+    },
+    "Sibiu": {
+        "Arad": "<EdgeModel Arad > Sibiu : 140>",
+        "Fagaras": "<EdgeModel Fagaras > Sibiu : 99>",
+        "Oradea": "<EdgeModel Oradea > Sibiu : 151>",
+        "Rimnicu Vilcea": "<EdgeModel Rimnicu Vilcea > Sibiu : 80>"
+    },
+    "Timisoara": {
+        "Arad": "<EdgeModel Arad > Timisoara : 118>",
+        "Lugoj": "<EdgeModel Lugoj > Timisoara : 111>"
+    },
+    "Urziceni": {
+        "Bucharest": "<EdgeModel Bucharest > Urziceni : 85>",
+        "Hirsova": "<EdgeModel Hirsova > Urziceni : 98>",
+        "Vaslui": "<EdgeModel Vaslui > Urziceni : 142>"
+    },
+    "Vaslui": {
+        "Iasi": "<EdgeModel Iasi > Vaslui : 92>",
+        "Urziceni": "<EdgeModel Urziceni > Vaslui : 142>"
+    },
+    "Zerind": {
+        "Arad": "<EdgeModel Arad > Zerind : 75>",
+        "Oradea": "<EdgeModel Oradea > Zerind : 71>"
+    }
+}
