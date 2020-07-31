@@ -4,30 +4,6 @@
 from pyecharts import options as opts
 
 class Style:
-    @classmethod
-    def make_root(cls, node):
-        node.attr.update(cls.ROOT_NODE_STYLE)
-
-    @classmethod
-    def make_terminal(cls, node):
-        node.attr.update(cls.TERMINAL_NODE_STYLE)
-
-    @classmethod
-    def node_searched(cls, node):
-        node.attr.update(cls.SEARCHED_NODE_STYLE)
-
-    @classmethod
-    def node_current(cls, node):
-        node.attr.update(cls.CURRENT_NODE_STYLE)
-
-    @classmethod
-    def edge_searched(cls, edge):
-        edge.attr.update(cls.SEARCHED_EDGE_STYLE)
-
-    @classmethod
-    def edge_current(cls, edge):
-        edge.attr.update(cls.CURRENT_EDGE_STYLE)
-
     # 默认的HTML输出地址
     DEFAULT_HTML_PATH = "./Romania.html"
 

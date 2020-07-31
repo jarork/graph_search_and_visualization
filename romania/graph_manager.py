@@ -5,14 +5,16 @@
 from pyecharts.charts import Graph
 from pyecharts import options as opts
 from data_structure import Node, Edge
-from time import sleep
+from style_controller import StyleCtrl
 from style_sheet import Style
+from data_controller import DataCtrl
+from time import sleep
 import json
 
 
 class GraphManager:
     animation_mode = True
-    frames_per_minute = 90
+    frames_per_minute = 300
 
     def __init__(self, json_path_nodes, json_path_edges, mirror_edges=False):
         """
@@ -30,6 +32,9 @@ class GraphManager:
         # 建立查找队列
         self.queue = []
 
+        # 建立数据控制器
+        DataCtrl.init_data(self.get_node, self.targets, self.sources)
+
     def __iter__(self, path=True, method="bfs"):
         """
             图的遍历，无视终点，必须遍历所有元素
@@ -39,31 +44,10 @@ class GraphManager:
         """
         pass
 
-    def delay(self):
-        if self.animation_mode == 1:
+    def add_frame(self):
+        if self.animation_mode == True:
             self.print_html()
             sleep(60 / self.frames_per_minute)
-
-    def h_func(self, node_x, node_y, terminal_x, terminal_y, weight=1):
-        """
-            Heuristic为当前节点与目标节点的欧几里得距离
-        : param node_x : 当前节点的x坐标
-        : param node_y : 当前节点的y坐标
-        : param terminal_x : 目标节点的x坐标
-        : param terminal_y : 目标节点的y坐标
-        : param weight : Heuristic的权重，权重逼近正无穷等价于GS搜索，权重为0等价于UFS
-        : return h_cost : 两节点间的欧几里得距离
-        """
-        return ((terminal_x-node_x)**2+(terminal_y-node_y)**2)**0.5
-
-    def get_edge(self, source_name, target_name):
-        """
-            已知两点返回临边，如果两个点没有临边则返回None
-        : param source_name : 起点名
-        : param target_name : 终点名
-        : return edge or None : 临边对象
-        """
-        return self.targets[source_name][target_name]
 
     def a_star(self, root, end, func_g=None, func_h=None, path=True):
         """
@@ -75,125 +59,77 @@ class GraphManager:
         : return node or path : 返回目的地元素或者到达目的地的整条路径
         """
 
-        def insert(queue, node):
-            """
-                逆序排列的二分插入
-            : param queue : 查找队列，按照f_cost从大到小的顺序存放的节点
-            : param target_node : 要在查找队列中插入的新节点
-            : return queue : 插入之后的队列
-            """
-            node_f_cost = node[0].attr["value"]
-
-            if len(queue) == 0:
-                queue.append(node)
-
-            elif len(queue) == 1:
-                if node_f_cost < queue[0][0].attr["value"]:
-                    queue.append(node)
-                else:
-                    queue.insert(0, node)
-
-            elif len(queue) > 1:
-                max_i = len(queue) - 1
-                min_i = 0
-
-                mid_i = round((max_i + min_i) / 2)
-
-                while max_i - min_i > 1:
-
-                    if queue[mid_i][0].attr["value"] > node_f_cost:
-                        min_i = mid_i
-                        mid_i = round((max_i + min_i) / 2)
-                    else:
-                        max_i = mid_i
-                        mid_i = round((max_i + min_i) / 2)
-
-                if node_f_cost > queue[min_i][0].attr["value"]:
-                    queue.insert(min_i, node)
-                elif node_f_cost < queue[max_i][0].attr["value"]:
-                    queue.append(node)
-                else:
-                    queue.insert(max_i, node)
-            return queue
-
         root_node = self.get_node[root]
         end_node = self.get_node[end]
-        terminal_x, terminal_y = end_node.attr["x"], end_node.attr["y"]
+        end_x, end_y = end_node.attr["x"], end_node.attr["y"]
 
         # 把根节点、gcost、hcost、fcost以及根路径放入查找队列
         self.queue.append([root_node, 0, 0, 0, [root_node.name]])
 
         # 增加根节点和目标节点的样式
-        Style.make_root(root_node)
-        Style.make_terminal(end_node)
-        self.delay()
+        StyleCtrl.be_root_node(root_node)
+        StyleCtrl.be_terminal_node(end_node)
+        self.add_frame()
 
         # 每次从查找队列取出一个节点，直到队列为空（没有找到），或者找到目标节点跳出
         while len(self.queue) > 0:
             cur_node, g_cost, h_cost, f_cost, cur_path = self.queue.pop()
 
+            # 渲染当前节点，如果这是根节点，则不渲染它
             if cur_node.name != root:
-                # 渲染展开的点
-                Style.node_current(cur_node)
+                StyleCtrl.be_current_node(cur_node)
 
-            # 渲染这个点的路径
-            path_edges = []
-            for i in range(len(cur_path) - 1):
-                edge = self.get_edge(cur_path[i], cur_path[i+1])
-                path_edges.append(edge)
-
-            for edge in path_edges:
-                Style.edge_current(edge)
-            self.delay()
+            # 渲染当前节点的整条路径
+            StyleCtrl.be_current_path(cur_path)
+            self.add_frame()
 
             # 获取当前节点的所有临边
             fringes = self.targets[cur_node.name]
 
             for target_name, edge in fringes.items():
-                tgt_g_cost, tgt_h_cost, tgt_f_cost = g_cost, h_cost, f_cost
+                tgt_g, tgt_h, tgt_f = g_cost, h_cost, f_cost
 
                 target_node = self.get_node[target_name]
                 target_path = cur_path.copy()
                 target_path.append(target_name)
 
-                # 识别这个节点的路径是否有环，如果有环则略过这个节点
-                if target_name in cur_path[:-1]:
+                # 如果这个节点的路径有环，则略过这个节点
+                if DataCtrl.is_circular_path(target_path):
                     continue
 
-                # 计算相邻节点的成本
-                node_x, node_y = target_node.attr["x"], target_node.attr["y"]
-                tgt_g_cost += edge.value
-                tgt_h_cost = self.h_func(
-                    node_x, node_y, terminal_x, terminal_y, weight=1)
-                tgt_f_cost = tgt_g_cost + tgt_h_cost
+                # 计算当前相邻节点的成本
+                cur_x, cur_y = target_node.attr["x"], target_node.attr["y"]
+                tgt_g += edge.value
+                tgt_h = DataCtrl.get_euclid_distance(
+                    cur_x, cur_y, end_x, end_y, weight=1)
+                tgt_f = tgt_g + tgt_h
 
                 # 更新每个点的成本，并在GUI上显示
-                target_node.attr["value"] = round(tgt_f_cost)
-                target_node = [target_node, tgt_g_cost,
-                               tgt_h_cost, tgt_f_cost, target_path]
+                target_node.attr["value"] = round(tgt_f)
+                target_node = [target_node, tgt_g,
+                               tgt_h, tgt_f, target_path]
 
                 # 把临边标记成已展开
-                Style.edge_searched(edge)
-                self.delay()
+                StyleCtrl.be_searched_edge(edge)
 
                 # 如果是终点，打印并跳出
                 if target_node[0].name == end:
-                    final_edge = self.get_edge(target_path[-2], target_path[-1])
-                    Style.edge_current(final_edge)
-                    self.delay()
-                    
-                    print("已从{}到达终点{}！总共路程：{}".format(root, end, tgt_g_cost))
+                    final_edge = DataCtrl.get_edge(
+                        target_path[-2], target_path[-1])
+                    StyleCtrl.be_current_edge(final_edge)
+                    self.add_frame()
+                    print("已从{}到达终点{}！总共路程：{}".format(root, end, tgt_g))
                     print("所经路径是：{}".format(target_path))
                     return
 
                 # 使用二分插入法将本节点插入查找队列
-                self.queue = insert(self.queue, target_node)
+                self.queue = DataCtrl.insert(self.queue, target_node)
 
             # 把当前节点的样式调整成已查找的样式
-            for edge in path_edges:
-                Style.edge_searched(edge)
+            StyleCtrl.be_searched_path(cur_path)
+
             if cur_node.name != root:
-                Style.node_searched(cur_node)
+                StyleCtrl.be_searched_node(cur_node)
 
         else:
             print("没有找到到达目标地点的路径。")
