@@ -53,14 +53,13 @@ from style_sheet import Style
 
 if __name__ == "__main__":
     # 使用数据，创建图表
-    graph_manager = GraphManager(
+    graph = GraphManager(
                         json_path_nodes="./city_nodes.json",
                         json_path_edges="./city_edges.json",
                         mirror_edges=True)
 
 
-    graph_manager.output_graph_html(
-        Style.init_opts, html_path="./Romania.html", **Style.render_opts)
-
-    graph_manager.export_json_nodes()
-    graph_manager.export_json_edges()
+    graph.a_star("Lugoj","Neamt")
+    
+    # graph_manager.export_json_nodes()
+    # graph_manager.export_json_edges()

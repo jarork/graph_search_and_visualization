@@ -4,109 +4,42 @@
 from pyecharts import options as opts
 
 class Style:
-    # 双向图中正向连接的样式
-    forward_line_style = opts.LineStyleOpts(
-                                        width=2,
-                                        color="#f55",
-                                        curve=0.05,
-                                        opacity=0.4
-                                        )
-    forward_lable_style = opts.LabelOpts(
-                                    is_show=False, 
-                                    color="#55f", 
-                                    position="middle", 
-                                    formatter="{c}",
-                                    font_size=10,
-                                    margin=4
-                                    )
-    forward_style={
-                "linestyle_opts":forward_line_style, 
-                "label_opts":forward_lable_style,
-                "symbol":['none', 'arrow']
-                }
-    
-    # 双向图中逆向连接的样式
-    backward_line_style = opts.LineStyleOpts(
-                                        width=2,
-                                        color="#55f",
-                                        curve=0.05,
-                                        opacity=0.5
-                                        )
-    backward_lable_style = opts.LabelOpts(
-                                        is_show=False, 
-                                        color="#fff", 
-                                        position="middle", 
-                                        formatter="{c}",
-                                        font_size=10,
-                                        margin=4
-                                        )
-    backward_style={
-                "linestyle_opts":backward_line_style, 
-                "label_opts":backward_lable_style,
-                "symbol":['none', 'arrow']
-                }
-    
-    # 起点节点的样式
-    root_node_style = {
-        "symbol_size" : 30,
-        "symbol" : "triangle"  
-    }
+    @classmethod
+    def make_root(cls, node):
+        node.attr.update(cls.ROOT_NODE_STYLE)
 
-    # 目的地节点的样式
-    terminal_node_style = {
-        "symbol_size" : 30,
-        "symbol" : "diamond"
-    }
+    @classmethod
+    def make_terminal(cls, node):
+        node.attr.update(cls.TERMINAL_NODE_STYLE)
 
-    # 已遍历的边的样式
-    searched_line_style = opts.LineStyleOpts(
-                                        width=2,
-                                        color="#55f",
-                                        curve=0.05,
-                                        opacity=1
-                                        )
-    searched_lable_style = opts.LabelOpts(
-                                        is_show=True, 
-                                        color="#55f", 
-                                        position="middle", 
-                                        formatter="{c}",
-                                        font_size=10,
-                                        margin=4
-                                        )
-    searched_edge_style = {
-                "linestyle_opts":searched_line_style, 
-                "label_opts":searched_lable_style,
-                "symbol":['none', 'arrow']
-                }
+    @classmethod
+    def node_searched(cls, node):
+        node.attr.update(cls.SEARCHED_NODE_STYLE)
 
-    # 正在查找的边的样式
-    current_line_style = opts.LineStyleOpts(
-                                        width=2,
-                                        color="#f55",
-                                        curve=0.05,
-                                        opacity=1
-                                        )
-    current_lable_style = opts.LabelOpts(
-                                        is_show=True, 
-                                        color="#f55", 
-                                        position="middle", 
-                                        formatter="{c}",
-                                        font_size=10,
-                                        margin=4
-                                        )
-    current_edge_style = {
-                "linestyle_opts":current_line_style, 
-                "label_opts":current_lable_style,
-                "symbol":['none', 'arrow']
-                }
+    @classmethod
+    def node_current(cls, node):
+        node.attr.update(cls.CURRENT_NODE_STYLE)
 
+    @classmethod
+    def edge_searched(cls, edge):
+        edge.attr.update(cls.SEARCHED_EDGE_STYLE)
+
+    @classmethod
+    def edge_current(cls, edge):
+        edge.attr.update(cls.CURRENT_EDGE_STYLE)
+
+    # 默认的HTML输出地址
+    DEFAULT_HTML_PATH = "./Romania.html"
+
+    # 默认的JS服务器
+    DEFAULT_JS_SERVER = "./assets/"
 
     # PyEcharts渲染选项
-    render_opts = dict(
+    DEFAULT_RENDER_OPTS = dict(
                     # 结点分类的类目，结点可以指定分类，也可以不指定。
                     categories=None, 
                     # 是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点。默认为 True
-                    is_focusnode=True, 
+                    is_focusnode=False, 
                     # 是否开启鼠标缩放和平移漫游。
                     is_roam=True,
                     # 是否旋转标签，默认为 False
@@ -121,8 +54,8 @@ class Style:
                     # edge_label=opts.LabelOpts(
                     #     is_show=True, color="#fff", position="middle", formatter="{c}"
                     # ),
-                    symbol="circle",
-                    symbol_size = 15,
+                    symbol="rect",
+                    symbol_size = 8,
                     # edge_symbol=['none', 'arrow'],
                     edge_symbol_size=10,
 
@@ -131,13 +64,123 @@ class Style:
                     )
 
     # PyEcharts全局选项
-    init_opts = opts.InitOpts(
+    DEFAULT_INIT_OPTS = opts.InitOpts(
                         #设置动画
                         animation_opts=opts.AnimationOpts(animation_delay=1000, animation_easing="elasticOut"),
                         #设置宽度、高度
                         width='600px',
                         height='500px', 
                         page_title="Romania",
-                        theme="light",
-                        js_host="./assets/"
+                        theme="dark",
+                        js_host=DEFAULT_JS_SERVER
                         )
+
+    # 双向图中正向连接的样式
+    FORWARD_LINE_STYLE = opts.LineStyleOpts(
+                                        width=1,
+                                        color="#f55",
+                                        curve=0,
+                                        opacity=0.4
+                                        )
+    FORWARD_LABLE_STYLE = opts.LabelOpts(
+                                    is_show=False, 
+                                    color="#55f", 
+                                    position="middle", 
+                                    formatter="{c}",
+                                    font_size=10,
+                                    margin=4
+                                    )
+    FORWARD_STYLE={
+                "linestyle_opts":FORWARD_LINE_STYLE, 
+                "label_opts":FORWARD_LABLE_STYLE,
+                "symbol":['none', 'none']
+                }
+    
+    # 双向图中逆向连接的样式
+    BACKWARD_LINE_STYLE = opts.LineStyleOpts(
+                                        width=1,
+                                        color="#77f",
+                                        curve=0,
+                                        opacity=0.4
+                                        )
+    BACKWARD_LABLE_STYLE = opts.LabelOpts(
+                                        is_show=False, 
+                                        color="#fff", 
+                                        position="middle", 
+                                        formatter="{c}",
+                                        font_size=10,
+                                        margin=4
+                                        )
+    BACKWARD_STYLE={
+                "linestyle_opts":BACKWARD_LINE_STYLE, 
+                "label_opts":BACKWARD_LABLE_STYLE,
+                "symbol":['none', 'none']
+                }
+    
+    # 起点节点的样式
+    ROOT_NODE_STYLE = {
+        "symbol_size" : 30,
+        "symbol" : "triangle"  
+    }
+
+    # 目的地节点的样式
+    TERMINAL_NODE_STYLE = {
+        "symbol_size" : 40,
+        "symbol" : "circle"
+    }
+
+    # 正在查找的节点的样式
+    CURRENT_NODE_STYLE = {
+        "symbol_size" : 20,
+        "symbol" : "circle"
+    }
+
+    # 以查找过的节点的样式
+    SEARCHED_NODE_STYLE = {
+        "symbol_size" : 15,
+        "symbol" : "triangle"
+    }
+
+    # 已遍历的边的样式
+    SEARCHED_LINE_STYLE = opts.LineStyleOpts(
+                                        width=1,
+                                        color="#fff",
+                                        curve=0,
+                                        opacity=0.5
+                                        )
+    SEARCHED_LABLE_STYLE = opts.LabelOpts(
+                                        is_show=True, 
+                                        color="#ccc", 
+                                        position="middle", 
+                                        formatter="{c}",
+                                        font_size=10,
+                                        margin=4
+                                        )
+    SEARCHED_EDGE_STYLE = {
+                "linestyle_opts":SEARCHED_LINE_STYLE, 
+                "label_opts":SEARCHED_LABLE_STYLE,
+                "symbol":['none', 'arrow'],
+                "symbol_size":5
+                }
+
+    # 正在查找的边的样式
+    CURRENT_LINE_STYLE = opts.LineStyleOpts(
+                                        width=4,
+                                        color="#0f0",
+                                        curve=0,
+                                        opacity=1
+                                        )
+    CURRENT_LABLE_STYLE = opts.LabelOpts(
+                                        is_show=True, 
+                                        color="#ccc", 
+                                        position="middle", 
+                                        formatter="{c}",
+                                        font_size=10,
+                                        margin=4
+                                        )
+    CURRENT_EDGE_STYLE = {
+                "linestyle_opts":CURRENT_LINE_STYLE, 
+                "label_opts":CURRENT_LABLE_STYLE,
+                "symbol":['none', 'arrow'],
+                "symbol_size":15
+                }
