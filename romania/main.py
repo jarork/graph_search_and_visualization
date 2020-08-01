@@ -58,8 +58,13 @@ if __name__ == "__main__":
                         json_path_edges="./city_edges.json",
                         mirror_edges=True)
 
+    start, end = "Neamt", "Dobreta"
+    # result_path, result_cost = graph.a_star(start, end, h_weight=100)
+    result_path, result_cost = graph.ucs(start, end)
 
-    graph.a_star("Lugoj","Neamt")
+    if result_path == None and result_cost == None:
+        print("没有找到到达该节点的路。")
+    else:
+        print("已从{}到达终点{}！总共路程：{}".format(start, end, result_cost))
+        print("所经路径是：{}".format(" -> ".join(result_path)))
     
-    # graph_manager.export_json_nodes()
-    # graph_manager.export_json_edges()

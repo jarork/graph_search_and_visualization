@@ -14,7 +14,7 @@ import json
 
 class GraphManager:
     animation_mode = True
-    frames_per_minute = 300
+    frames_per_minute = 60
 
     def __init__(self, json_path_nodes, json_path_edges, mirror_edges=False):
         """
@@ -49,15 +49,33 @@ class GraphManager:
             self.print_html()
             sleep(60 / self.frames_per_minute)
 
-    def a_star(self, root, end, func_g=None, func_h=None, path=True):
+    def a_star(
+            self,
+            root: str,
+            end: str,
+            func_g=DataCtrl.get_g_cost,
+            func_h=DataCtrl.get_euclid_distance,
+            h_weight=1,
+            is_bfs=False,
+            is_dijkstra: bool = True
+    ):
         """
-            A*查找
+            A* 查找
         : param path : 是否返回每一结点的路径 bool
         : param start : 查找的起点
         : param func_g function(g) return fg : 计算从起点到达该点所需的路程的函数
-        : param func_h function(h) return fh : 估算从该点到达终点大概要走路程的函数
+        : param func_h function(h) return fh : 估算从该点到达终点大概要走路程的函数，默认为使用欧几里得距离做Heuristic
+        : param dijkstra : 是否使用迪克斯特拉算法，迪克斯特拉更新到达每个节点的最小成本，高于此成本的路径将被剔除不进行继续展开
         : return node or path : 返回目的地元素或者到达目的地的整条路径
         """
+
+        # 处理不正确的输入值
+        if root == end:
+            raise Exception("起点和终点是相同的，这毫无意义。")
+        if root not in self.get_node:
+            raise Exception("不存在这个起始点。")
+        if end not in self.get_node:
+            raise Exception("不存在这个终止点")
 
         root_node = self.get_node[root]
         end_node = self.get_node[end]
@@ -99,18 +117,28 @@ class GraphManager:
 
                 # 计算当前相邻节点的成本
                 cur_x, cur_y = target_node.attr["x"], target_node.attr["y"]
-                tgt_g += edge.value
-                tgt_h = DataCtrl.get_euclid_distance(
-                    cur_x, cur_y, end_x, end_y, weight=1)
-                tgt_f = tgt_g + tgt_h
 
-                # 更新每个点的成本，并在GUI上显示
-                target_node.attr["value"] = round(tgt_f)
+                tgt_g = func_g(tgt_g, edge.value, cost_eq_depth = is_bfs)
+                # tgt_g += edge.value
+                tgt_h = func_h(cur_x, cur_y, end_x, end_y)
+                tgt_f = tgt_g + tgt_h * h_weight
+
+                # 如果应用迪克斯特拉算法，搜索时则更新节点的实际成本
+                if is_dijkstra == True:
+                    # 如果这条路径到达这个节点的实际成本高于之前路径的实际成本，那么就放弃这条路径
+                    if tgt_f >= target_node.attr["value"]:
+                        continue
+
+                    else:
+                        # 如果发现到达这个节点的更短的路径，那么就更新这个点的实际成本
+                        target_node.attr["value"] = tgt_g
+
                 target_node = [target_node, tgt_g,
                                tgt_h, tgt_f, target_path]
 
                 # 把临边标记成已展开
                 StyleCtrl.be_searched_edge(edge)
+                self.add_frame()
 
                 # 如果是终点，打印并跳出
                 if target_node[0].name == end:
@@ -118,9 +146,7 @@ class GraphManager:
                         target_path[-2], target_path[-1])
                     StyleCtrl.be_current_edge(final_edge)
                     self.add_frame()
-                    print("已从{}到达终点{}！总共路程：{}".format(root, end, tgt_g))
-                    print("所经路径是：{}".format(target_path))
-                    return
+                    return target_path, tgt_g
 
                 # 使用二分插入法将本节点插入查找队列
                 self.queue = DataCtrl.insert(self.queue, target_node)
@@ -132,16 +158,25 @@ class GraphManager:
                 StyleCtrl.be_searched_node(cur_node)
 
         else:
-            print("没有找到到达目标地点的路径。")
+            return None, None
 
-    def ucs(self, path=True):
+    def ucs(
+            self,
+            root,
+            end,
+            func_g=DataCtrl.get_g_cost,
+            func_h=DataCtrl.get_euclid_distance,
+            h_weight=0,
+            is_bfs=False,
+            is_dijkstra=True):
         """
             统一成本查找 (Uniform Cost Search)
             优先展开从起点能到达的最近的点。当起点到所有未展开点的路程都一致的情况，就等价于BFS
         : param path : 是否返回目的地的整条路径
-        : return node or path : 返回目的地元素或者到达目的地的整条路径
+        : return node or path : 返回到达目的地的整条路径
         """
-        pass
+        result = self.a_star(root,end,func_g,func_h,h_weight,is_bfs,is_dijkstra)
+        return result
 
     def gs(self, path=True):
         """

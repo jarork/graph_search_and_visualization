@@ -119,7 +119,7 @@ class Style:
 
     # 已遍历的边的样式
     SEARCHED_LINE_STYLE = opts.LineStyleOpts(
-                                        width=1,
+                                        width=2,
                                         color="#fff",
                                         curve=0,
                                         opacity=0.5
@@ -136,7 +136,7 @@ class Style:
                 "linestyle_opts":SEARCHED_LINE_STYLE, 
                 "label_opts":SEARCHED_LABLE_STYLE,
                 "symbol":['none', 'arrow'],
-                "symbol_size":5
+                "symbol_size":10
                 }
 
     # 正在查找的边的样式

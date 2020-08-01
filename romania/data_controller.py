@@ -42,13 +42,13 @@ class DataCtrl:
         : param target_node : 要在查找队列中插入的新节点
         : return queue : 插入之后的队列
         """
-        node_f_cost = node[0].attr["value"]
+        node_f_cost = node[3]
 
         if len(queue) == 0:
             queue.append(node)
 
         elif len(queue) == 1:
-            if node_f_cost < queue[0][0].attr["value"]:
+            if node_f_cost < queue[0][3]:
                 queue.append(node)
             else:
                 queue.insert(0, node)
@@ -61,16 +61,16 @@ class DataCtrl:
 
             while max_i - min_i > 1:
 
-                if queue[mid_i][0].attr["value"] > node_f_cost:
+                if queue[mid_i][3] > node_f_cost:
                     min_i = mid_i
                     mid_i = round((max_i + min_i) / 2)
                 else:
                     max_i = mid_i
                     mid_i = round((max_i + min_i) / 2)
 
-            if node_f_cost > queue[min_i][0].attr["value"]:
+            if node_f_cost > queue[min_i][3]:
                 queue.insert(min_i, node)
-            elif node_f_cost < queue[max_i][0].attr["value"]:
+            elif node_f_cost < queue[max_i][3]:
                 queue.append(node)
             else:
                 queue.insert(max_i, node)
@@ -93,7 +93,7 @@ class DataCtrl:
             return False
 
     @classmethod
-    def get_euclid_distance(self, node_x, node_y, terminal_x, terminal_y, weight=1):
+    def get_euclid_distance(self, node_x, node_y, terminal_x, terminal_y):
         """
             Heuristic为当前节点与目标节点的欧几里得距离
         : param node_x : 当前节点的x坐标
@@ -104,3 +104,10 @@ class DataCtrl:
         : return euclid_distance : 两节点间的欧几里得距离
         """
         return ((terminal_x-node_x)**2+(terminal_y-node_y)**2)**0.5
+
+    @classmethod
+    def get_g_cost(self, prev_cost, new_cost, cost_eq_depth=False):
+        if cost_eq_depth == True:
+            return prev_cost + 1
+        elif cost_eq_depth == False:
+            return prev_cost + new_cost
