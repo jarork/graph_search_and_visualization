@@ -32,50 +32,109 @@ class DataCtrl:
         return cls.target_edges[source_name][target_name]
 
     @classmethod
-    def insert(cls, queue, node):
+    def insert(cls, queue, node, mode = "DESC"):
         """
-            逆序排列的二分插入
+            正逆序排列的二分插入
             
         : param queue : 查找队列，按照队列的f_cost参数从大到小的顺序存放的节点
-                        队列queue的结构：
+                        节点包node的数据结构：
                         list[节点对象, g_cost, h_cost, f_cost, 节点路径(包含路径上全部节点对象)]
+        : param mode : 插入模式
+                        DESC -> 降序插入
+                        ASC  -> 升序插入
+                        FIFO -> 队列插入，先进先出
+                        FILO -> 栈插入，先进后出
         : param target_node : 要在查找队列中插入的新节点
         : return queue : 插入之后的队列
         """
-        node_f_cost = node[3]
 
-        if len(queue) == 0:
-            queue.append(node)
+        if mode == "desc" or mode == "DESC":
+            node_f_cost = node[3]
 
-        elif len(queue) == 1:
-            if node_f_cost < queue[0][3]:
+            if len(queue) == 0:
                 queue.append(node)
-            else:
-                queue.insert(0, node)
 
-        elif len(queue) > 1:
-            max_i = len(queue) - 1
-            min_i = 0
-
-            mid_i = round((max_i + min_i) / 2)
-
-            while max_i - min_i > 1:
-
-                if queue[mid_i][3] > node_f_cost:
-                    min_i = mid_i
-                    mid_i = round((max_i + min_i) / 2)
+            elif len(queue) == 1:
+                if node_f_cost < queue[0][3]:
+                    queue.append(node)
                 else:
-                    max_i = mid_i
-                    mid_i = round((max_i + min_i) / 2)
+                    queue.insert(0, node)
 
-            if node_f_cost > queue[min_i][3]:
-                queue.insert(min_i, node)
-            elif node_f_cost < queue[max_i][3]:
+            elif len(queue) > 1:
+                max_i = len(queue) - 1
+                min_i = 0
+
+                mid_i = round((max_i + min_i) / 2)
+
+                while max_i - min_i > 1:
+
+                    if queue[mid_i][3] > node_f_cost:
+                        min_i = mid_i
+                        mid_i = round((max_i + min_i) / 2)
+                    elif queue[mid_i][3] < node_f_cost:
+                        max_i = mid_i
+                        mid_i = round((max_i + min_i) / 2)
+                    elif queue[mid_i][3] == node_f_cost:
+                        index = mid_i
+                        break
+                else:
+                    index = max_i
+
+                if node_f_cost > queue[0][3]:
+                    queue.insert(min_i, node)
+                elif node_f_cost < queue[-1][3]:
+                    queue.append(node)
+                else:
+                    queue.insert(index, node)
+            return queue
+
+        elif mode == "asc" or mode == "ASC":
+            node_f_cost = node[3]
+
+            if len(queue) == 0:
                 queue.append(node)
-            else:
-                queue.insert(max_i, node)
-        return queue
 
+            elif len(queue) == 1:
+                if node_f_cost > queue[0][3]:
+                    queue.append(node)
+                else:
+                    queue.insert(0, node)
+
+            elif len(queue) > 1:
+                max_i = len(queue) - 1
+                min_i = 0
+
+                mid_i = round((max_i + min_i) / 2)
+
+                while max_i - min_i > 1:
+                    if queue[mid_i][3] > node_f_cost:
+                        max_i = mid_i
+                        mid_i = round((max_i + min_i) / 2)
+                    elif queue[mid_i][3] < node_f_cost:
+                        min_i = mid_i
+                        mid_i = round((max_i + min_i) / 2)
+                    elif queue[mid_i][3] == node_f_cost:
+                        index = mid_i
+                        break
+                else:
+                    index = max_i
+
+                if node_f_cost > queue[-1][3]:
+                    queue.append(node)
+                elif node_f_cost < queue[0][3]:
+                    queue.insert(0, node)
+                else:
+                    queue.insert(index, node)
+            return queue
+
+        elif mode == "fifo" or mode == "FIFO":
+            queue.insert(0, node)
+            return queue
+
+        elif mode == "filo" or mode == "FILO":
+            queue.append(node)
+            return queue
+            
     @classmethod
     def is_circular_path(cls, path_of_nodename) -> bool:
         """

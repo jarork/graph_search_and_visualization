@@ -54,13 +54,19 @@ from style_sheet import Style
 if __name__ == "__main__":
     # 使用数据，创建图表
     graph = GraphManager(
-                        json_path_nodes="./city_nodes.json",
-                        json_path_edges="./city_edges.json",
-                        mirror_edges=True)
+                        json_path_nodes="./city_nodes.json",    # 导入节点
+                        json_path_edges="./city_edges.json",    # 导入边
+                        mirror_edges=True,      # 源数据单向边变为双向
+                        animation=True          # 开启动画
+                        )
 
-    start, end = "Neamt", "Dobreta"
-    # result_path, result_cost = graph.a_star(start, end, h_weight=100)
-    result_path, result_cost = graph.ucs(start, end)
+    start, end = "Craiova", "Neamt"
+
+    # result_path, result_cost = graph.a_star(start, end, h_weight=1)
+    # result_path, result_cost = graph.ucs(start, end)
+    # result_path, result_cost = graph.gs(start, end)
+    # result_path, result_cost = graph.bfs(start, end)
+    result_path, result_cost = graph.dfs(start, end)
 
     if result_path == None and result_cost == None:
         print("没有找到到达该节点的路。")

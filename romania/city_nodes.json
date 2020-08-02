@@ -1,121 +1,121 @@
 {
     "Arad": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 20,
         "y": 100
     },
     "Bucharest": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 280,
         "y": 300
     },
     "Craiova": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 180,
         "y": 370
     },
     "Dobreta": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 70,
         "y": 365
     },
     "Eforie": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 390,
         "y": 370
     },
     "Fagaras": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 200,
         "y": 150
     },
     "Giurgiu": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 260,
         "y": 380
     },
     "Hirsova": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 375,
         "y": 280
     },
     "Iasi": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 320,
         "y": 65
     },
     "Lugoj": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 70,
         "y": 230
     },
     "Mehadia": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 75,
         "y": 300
     },
     "Neamt": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 250,
         "y": 30
     },
     "Oradea": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 100,
         "y": 20
     },
     "Pitesti": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 210,
         "y": 270
     },
     "Rimnicu Vilcea": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 150,
         "y": 220
     },
     "Sibiu": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 120,
         "y": 130
     },
     "Timisoara": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 20,
         "y": 175
     },
     "Urziceni": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 310,
         "y": 240
     },
     "Vaslui": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 350,
         "y": 150
     },
     "Zerind": {
         "is_fixed": true,
-        "value": 99999999,
+        "value": "null",
         "x": 45,
         "y": 45
     }

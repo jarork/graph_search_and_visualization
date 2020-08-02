@@ -17,6 +17,7 @@ class Node:
         """
         self.name = name
         self.attr = kwargs
+        self.prop = {}
         # self.__dict__.update(**kwargs)
 
     def dict(self):
