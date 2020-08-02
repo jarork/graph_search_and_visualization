@@ -20,7 +20,7 @@ class Node:
         self.prop = {}
         # self.__dict__.update(**kwargs)
 
-    def dict(self):
+    def styles_dict(self):
         nodes_data = {"name": self.name}
         nodes_data.update(self.attr)
         return nodes_data
@@ -45,6 +45,7 @@ class Edge:
         self.target = target
         self.value = value
         self.attr = kwargs
+        self.prop = {}
         # self.__dict__.update(**kwargs)
 
     def __repr__(self):
@@ -57,7 +58,7 @@ class Edge:
 
         return "<EdgeModel {}>".format(string)
 
-    def dict(self):
+    def styles_dict(self):
         edges_data = {
             "source": self.source,
             "target": self.target,

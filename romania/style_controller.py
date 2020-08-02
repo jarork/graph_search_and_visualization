@@ -4,7 +4,7 @@
 """
 
 from style_sheet import Style
-from data_controller import DataCtrl
+from data_logic import DataAlgos
 
 
 class StyleCtrl:
@@ -67,7 +67,7 @@ class StyleCtrl:
         : param path_of_nodes : 含有节点名的路径列表
         """
         for i in range(len(path_of_nodes) - 1):
-            edge = DataCtrl.get_edge(path_of_nodes[i], path_of_nodes[i+1])
+            edge = DataAlgos.get_edge(path_of_nodes[i], path_of_nodes[i+1])
             cls.be_current_edge(edge)
 
     @classmethod
@@ -77,5 +77,5 @@ class StyleCtrl:
         : param path_of_nodes : 含有节点名的路径列表
         """
         for i in range(len(path_of_nodes) - 1):
-            edge = DataCtrl.get_edge(path_of_nodes[i], path_of_nodes[i+1])
+            edge = DataAlgos.get_edge(path_of_nodes[i], path_of_nodes[i+1])
             cls.be_searched_edge(edge)

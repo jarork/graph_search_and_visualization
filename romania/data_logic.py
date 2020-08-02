@@ -3,7 +3,7 @@
     提供帮助获取及修改数据的方法
 """
 
-class DataCtrl:
+class DataAlgos:
     """
         数据业务层
         提供帮助获取及修改数据的方法
@@ -44,7 +44,7 @@ class DataCtrl:
                         ASC  -> 升序插入
                         FIFO -> 队列插入，先进先出
                         FILO -> 栈插入，先进后出
-        : param target_node : 要在查找队列中插入的新节点
+        : param node : 要在查找队列中插入的新节点
         : return queue : 插入之后的队列
         """
 
@@ -134,7 +134,32 @@ class DataCtrl:
         elif mode == "filo" or mode == "FILO":
             queue.append(node)
             return queue
+
+    @classmethod
+    def drop_node_from_queue(cls, queue, node):
+        """
+        在查找队列中找到节点名，并删除它和它的全部信息
+        : param queue : 查找队列，按照队列的f_cost参数从大到小的顺序存放的节点
+                        节点包node的数据结构：
+                        list[节点对象, g_cost, h_cost, f_cost, 节点路径(包含路径上全部节点对象)]
+        : param node : 要在查找队列中插入的新节点
+        : return queue : 插入之后的队列
+        """
+        
+        if len(queue) != 0:
+            for i in range(len(queue)):
+                # 如果找到这个节点，跳出并依照找到的索引删除它
+                node_found = 0
+                if queue[i][0].name == node:
+                    node_found = 1
+                    break
             
+            if node_found:
+                del queue[i]
+            return queue
+        else:
+            return queue
+
     @classmethod
     def is_circular_path(cls, path_of_nodename) -> bool:
         """
@@ -150,6 +175,20 @@ class DataCtrl:
             return True
         else:
             return False
+
+    @classmethod
+    def get_path_distance(cls, path_of_nodename) -> int or float:
+        """
+            根据一条路径中的节点名，求得这条路径的总长度
+        : param path_of_nodename : 含有路径上所有节点名的列表
+        : return distance : 路径的总长度
+        """
+
+        distance = 0
+        for i in range(len(path_of_nodename)-1):
+            edge = cls.get_edge(path_of_nodename[i],path_of_nodename[i+1])
+            distance += edge.value
+        return distance
 
     @classmethod
     def get_euclid_distance(self, node_x, node_y, terminal_x, terminal_y):

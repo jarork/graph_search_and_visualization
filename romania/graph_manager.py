@@ -2,62 +2,84 @@
     业务逻辑层
     提供图的查找和遍历方法
 """
-from pyecharts.charts import Graph
-from pyecharts import options as opts
-from data_structure import Node, Edge
+
 from style_controller import StyleCtrl
-from style_sheet import Style
-from data_controller import DataCtrl
+from data_logic import DataAlgos
+from data_manager import DataManager
 from time import sleep
-import json
+from copy import deepcopy
 
 
 class GraphManager:
-    frames_per_minute = 60
-
-    def __init__(self, json_path_nodes, json_path_edges, mirror_edges=False, animation=True):
+    def __init__(self,
+                 json_path_nodes,
+                 json_path_edges,
+                 mirror_edges=False,
+                 animation=True,
+                 frames_per_minute=60
+                 ):
         """
             创建双向图结构
         """
         # 建立存放节点和边的数据表
-        self.nodes = self.import_json_nodes(json_path_nodes)
-        self.edges = self.import_json_edges(json_path_edges, mirror_edges)
+        self.nodes = DataManager.import_json_nodes(json_path_nodes)
+        self.edges = DataManager.import_json_edges(json_path_edges, mirror_edges)
 
-        # 建立存放节点和边的哈希表，节点哈希表的索引为name，边的哈希表的索引为source和target
-        self.get_node = self.create_nodes_hash_table(self.nodes)
-        self.targets, self.sources = self.create_edges_hash_tables(
+        # 建立工作区的备份，以便每次搜索完可以重新加载工作区
+        self.nodes_backup = deepcopy(self.nodes)
+        self.edges_backup = deepcopy(self.edges)
+
+        # 建立存放节点和边的索引，节点的索引为name，边的索引为source和target
+        self.get_node = DataManager.create_nodes_dict(self.nodes)
+        self.targets, self.sources = DataManager.create_edges_dict(
             self.edges)
 
         # 建立查找队列
         self.queue = []
 
         # 建立数据控制器
-        DataCtrl.init_data(self.get_node, self.targets, self.sources)
+        DataManager.init_data(self.nodes, self.edges)
+        DataAlgos.init_data(self.get_node, self.targets, self.sources)
 
-        # 是否使用动画
+        # 是否开启动画，以及动画帧率
         self.animation = animation
+        self.frames_per_minute = frames_per_minute
 
-    def __iter__(self, path=True, method="bfs"):
-        """
-            图的遍历，无视终点，必须遍历所有元素
-        : param path : 是否返回每一结点的路径 bool
-        : param method : 使用的查找方法，默认BFS
-        : yield node or path : 返回树内所有结点
-        """
-        pass
+    def reload_workspace(self):
+        # 清空工作区，包括所有节点和边以及引用它们的容器
+        del self.queue, self.get_node, self.targets, self.sources, self.nodes, self.edges
 
-    def add_frame(self, end=False):
+        self.nodes = deepcopy(self.nodes_backup)
+        self.edges = deepcopy(self.edges_backup)
+
+        # 重新生成节点和边的索引
+        self.get_node = DataManager.create_nodes_dict(self.nodes)
+        self.targets, self.sources = DataManager.create_edges_dict(
+            self.edges)
+        
+        # 重新建立查找队列
+        self.queue = []
+
+        # 重新建立数据控制器
+        DataManager.init_data(self.nodes, self.edges)
+        DataAlgos.init_data(self.get_node, self.targets, self.sources)
+
+    def add_frame(self, last_frame=False):
+        """
+            给动画添加一帧
+        : param last_frame : 是否最后一帧
+        """
         if self.animation == True:
-            self.print_html()
+            DataManager.print_html()
             sleep(60 / self.frames_per_minute)
-        if end == True:
-            self.print_html()
+        if last_frame == True:
+            DataManager.print_html()
 
     def a_star(self,
                root: str,          # 查找起始点
                end: str,           # 查找终止点
-               func_g=DataCtrl.get_g_cost,               # 实际成本计算公式：g(n)
-               func_h=DataCtrl.get_euclid_distance,      # 预期成本计算公式：h(n)函数
+               func_g=DataAlgos.get_g_cost,               # 实际成本计算公式：g(n)
+               func_h=DataAlgos.get_euclid_distance,      # 预期成本计算公式：h(n)函数
                h_weight: int or float = 1,                               # Heuristic的权重
                mode="a_star",             # 查找模式
                depth_limit=None,          # 是否限制搜索层数
@@ -116,14 +138,16 @@ class GraphManager:
 
             for target_name, edge in fringes.items():
                 # 获取子节点的数据
-                tgt_g, tgt_h, tgt_f = g_cost, h_cost, f_cost    # 获取子节点当前成本，预期成本，总共成本
-                cur_x, cur_y = target_node.attr["x"], target_node.attr["y"]     # 获取子节点坐标
                 target_node = self.get_node[target_name]    # 获取子节点对象
-                target_path = cur_path.copy()               # 获取子节点路径               
+                target_path = cur_path.copy()               # 获取子节点路径
                 target_path.append(target_name)             # 更新子节点路径
 
+                tgt_g, tgt_h, tgt_f = g_cost, h_cost, f_cost    # 获取子节点当前成本，预期成本，总共成本
+                # 获取子节点坐标
+                cur_x, cur_y = target_node.attr["x"], target_node.attr["y"]
+
                 # 如果这个节点的路径有环，则略过这个节点
-                if DataCtrl.is_circular_path(target_path):
+                if DataAlgos.is_circular_path(target_path):
                     continue
 
                 if mode == "a_star":
@@ -188,39 +212,44 @@ class GraphManager:
                         else:
                             target_node.attr["value"] = tgt_g
 
-                        # 增加节点遍历次数    
-                        target_node.prop.update({"expanded":0})
+                        # 增加节点遍历次数
+                        target_node.prop.update({"expanded": 0})
 
                     # 如果这条路径到达这个节点的实际成本高于之前路径的实际成本，那么就放弃这条路径
                     if tgt_g >= target_node.attr["value"]:
                         if mode in ("dfs", "ids") and tgt_g == target_node.attr["value"]:
                             if target_node.prop["expanded"]:
-                                continue                            
+                                continue
                         else:
                             continue
                     else:
                         # 如果发现到达这个节点的更短的路径，那么就更新这个点的实际成本
                         target_node.attr["value"] = tgt_g
 
+                        # 如果在队列中已经存在更高成本的这个节点，就把它删除掉
+                        if target_node.prop["expanded"] != 0:
+                            self.queue = DataAlgos.drop_node_from_queue(self.queue, target_name)
+
                 # 把临边标记成已展开
                 StyleCtrl.be_searched_edge(edge)
                 target_node.prop["expanded"] += 1
 
                 target_node_data = [target_node, tgt_g,
-                               tgt_h, tgt_f, target_path]
+                                    tgt_h, tgt_f, target_path]
 
-                # 如果是终点，打印并跳出
+                # 如果是终点，打印，重置工作区，并返回
                 if target_name == end:
-                    final_edge = DataCtrl.get_edge(
+                    final_edge = DataAlgos.get_edge(
                         target_path[-2], target_path[-1])
 
                     StyleCtrl.be_current_edge(final_edge)
-                    self.add_frame(end=True)
+                    self.add_frame(last_frame=True)
 
-                    return target_path, tgt_g
+                    self.reload_workspace()
+                    return target_path, DataAlgos.get_path_distance(target_path)
 
                 # 使用二分插入法将本节点插入查找队列
-                self.queue = DataCtrl.insert(
+                self.queue = DataAlgos.insert(
                     self.queue, target_node_data, mode=insert_mode)
 
             # 在所有子节点渲染完毕后，刷新页面
@@ -233,12 +262,13 @@ class GraphManager:
                 StyleCtrl.be_searched_node(cur_node)
 
         else:
+            self.reload_workspace()
             return None, None
 
     def ucs(self,
             root,           # 查找的起始点
             end,            # 查找的终止点
-            func_g=DataCtrl.get_g_cost,     # 实际成本计算公式 g(n)
+            func_g=DataAlgos.get_g_cost,     # 实际成本计算公式 g(n)
             depth_limit=None,          # 是否限制搜索层数
             is_dijkstra=True    # 是否使用迪克斯特拉更新重复点的成本
             ):
@@ -258,7 +288,7 @@ class GraphManager:
     def gs(self,
             root,           # 查找的起始点
             end,            # 查找的终止点
-            func_h=DataCtrl.get_euclid_distance,     # 实际成本计算公式 g(n)，默认为欧几里得
+            func_h=DataAlgos.get_euclid_distance,     # 实际成本计算公式 g(n)，默认为欧几里得
             depth_limit=None,          # 是否限制搜索层数
             is_dijkstra=True    # 是否使用迪克斯特拉更新重复点的成本
            ):
@@ -311,146 +341,31 @@ class GraphManager:
 
         return self.a_star(root, end, is_dijkstra=is_dijkstra, depth_limit=depth_limit, mode="dfs")
 
-    def ids(self, path=True, depth_limit=None):
+    def ids(self,
+            root,           # 查找的起始点
+            end,            # 查找的终止点
+            depth_limit=5,          # 是否限制搜索层数
+            is_dijkstra=True    # 是否使用迪克斯特拉更新重复点的成本
+            ):
         """
-            迭代深化搜索 (Iterative Deepening Search)
-        : param path : 是否返回目的地的整条路径
-        : param depth_limit : 查找深度的限制（层数）
-        : return node or path : 返回目的地元素或者到达目的地的整条路径
-        """
-        pass
-
-    def import_json_nodes(self, json_path) -> list:
-        """
-            从JSON中导入节点
-        : param json_path : JSON文件的绝对或相对路径
-        : return nodes_table : 存储所有导入节点的数据表
-        """
-
-        nodes = []
-        with open(json_path, 'r') as f:
-            nodes_json = f.read()
-        nodes_book = json.loads(nodes_json)
-
-        for name, attr in nodes_book.items():
-            nodes.append(Node(name, **attr))
-
-        return nodes
-
-    def import_json_edges(self, json_path, mirror_edges=False):
-        """
-            从JSON中导入连接
-        : param json_path : JSON文件的绝对或相对路径
-        : param mirror_edges : 如果JSON中的边是单向的，可以把此项设为True变为双向边
-        : return edges_table : 存储所有导入边的数据表
+            深度优先查找 (Depth First Search)
+            优先展开最大深度的节点
+        : param root : 查找的起始点
+        : param end : 查找的终止点
+        : param depth_limit : 最深搜索的层数，默认没有层数限制。
+        : param dijkstra : 是否使用迪克斯特拉算法，迪克斯特拉更新到达每个节点的最小成本，高于此成本的路径将被剔除不进行继续展开
+        : return path, g_cost : 返回到达目的地的整条路径，以及这条路径的长度
         """
 
-        edges_table = []
-        with open(json_path, 'r') as f:
-            edges_json = f.read()
-        edges_book = json.loads(edges_json)
+        if not depth_limit:
+            raise Exception("你必须限制IDS的搜索层数")
 
-        for edge in edges_book:
-            # 插入所有正向的连接
-            # 为正向连接插入样式
-            edge.update(Style.FORWARD_STYLE)
-            edges_table.append(Edge(**edge))
-
-            if mirror_edges == True:
-                # 重新插入所有反向的连接
-                # 为反向连接添加样式
-                edge.update(Style.BACKWARD_STYLE)
-
-                edge["source"], edge["target"] = edge["target"], edge["source"]
-                edges_table.append(Edge(**(edge)))
-
-        return edges_table
-
-    def create_nodes_hash_table(self, nodes_table) -> dict:
-        """
-            根据节点名/ID创建节点的索引，这样就可以在众多节点中快速定位到一个节点了
-        : param nodes_table : 节点表
-        : return nodes_hash_table : 以节点名为索引的哈希表
-        """
-        # 为nodes表建立节点名name的索引，以便使节点的查找效率为O(1)。
-        nodes_hash_table = {}
-        for node_model in nodes_table:
-            node_name = node_model.name
-
-            nodes_hash_table.update({node_name: node_model})
-        return nodes_hash_table
-
-    def create_edges_hash_tables(self, edges_table) -> tuple:
-        """
-            根据起始节点名/ID，以及目标节点名/ID创建索引
-            这样，就可以查找一个点的所有连接，能到达的所有节点
-            以及能到达一个节点的所有节点和临边了
-        : param edges_table : 没有索引的临边列表
-        : return (source_hash_table, target_hash_table) : 以临边起终节点名为索引的2个哈希表
-        """
-        # 为edges表建立source和target项的索引，以便使边的查找效率为O(1)。
-        # 把所有边进行分类，每个节点可作为起点和终点，每个起点和终点分为一类。
-        targets_table = {}
-        sources_table = {}
-        for edge_model in edges_table:
-            source = edge_model.source
-            target = edge_model.target
-            value = edge_model.value
-            attr = edge_model.attr
-
-            if source not in targets_table:
-                targets_table.update({source: {}})
-
-            targets_table[source].update(
-                {target: edge_model})
-
-            if target not in sources_table:
-                sources_table.update({target: {}})
-
-            sources_table[target].update(
-                {source: edge_model})
-
-        return (targets_table, sources_table)
-
-    def export_json_nodes(self):
-        nodes_table = {key: node_model.dict()
-                       for key, node_model in self.get_node.items()}
-        json_nodes = json.dumps(
-            nodes_table, sort_keys=True, indent=4, separators=(',', ': '))
-        with open("./output_json_nodes.json", 'w') as f:
-            f.write(json_nodes)
-
-    def export_json_edges(self):
-        source_edges = {source: {target_name: str(target_attr)
-                                 for target_name, target_attr in target.items()}
-                        for source, target in self.targets.items()}
-        target_edges = {target: {source_name: str(source_attr)
-                                 for source_name, source_attr in source.items()}
-                        for target, source in self.sources.items()}
-        json_source_edges = json.dumps(
-            source_edges, sort_keys=True, indent=4, separators=(',', ': '))
-        json_target_edges = json.dumps(
-            target_edges, sort_keys=True, indent=4, separators=(',', ': '))
-        with open("./output_json_source_edges.json", 'w') as f:
-            f.write(json_source_edges)
-        with open("./output_json_target_edges.json", 'w') as f:
-            f.write(json_target_edges)
-
-    def print_html(
-        self, html_path: str = Style.DEFAULT_HTML_PATH,
-        init_options: dict = Style.DEFAULT_INIT_OPTS,
-        render_style: dict = Style.DEFAULT_RENDER_OPTS
-    ):
-        """
-            将图导出为HTML形式
-        : param init_options : PyEcharts全局配置，请在style库中修改。
-        : param html_path : 输出的HTML地址，可使用绝对路径或者相对路径。
-        : param **render_style : PyEcharts的渲染配置，请在style库中修改
-        """
-        nodes_printable = [opts.GraphNode(**n.dict()) for n in self.nodes]
-        edges_printable = [opts.GraphLink(**e.dict()) for e in self.edges]
-
-        graph = Graph(init_options)
-
-        graph.add("", nodes_printable, edges_printable, **render_style)
-        graph.render(html_path)
+        l = 1
+        while l <= depth_limit:
+            result = self.dfs(root, end, depth_limit=l, is_dijkstra=is_dijkstra)
+            
+            if result[0] == None:
+                l += 1
+            else:
+                return result
+        return None, None
